@@ -33,6 +33,19 @@ class Annonce
     #[ORM\OneToMany(mappedBy: 'annonce', targetEntity: Image::class, orphanRemoval: true)]
     private $images;
 
+    #[ORM\Column(type: 'integer')]
+    private $cd_postal;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $ville;
+
+    #[ORM\Column(type: 'datetime')]
+    private $date;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'annonce')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $user;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -129,6 +142,54 @@ class Annonce
                 $image->setAnnonce(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCdPostal(): ?int
+    {
+        return $this->cd_postal;
+    }
+
+    public function setCdPostal(int $cd_postal): self
+    {
+        $this->cd_postal = $cd_postal;
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(string $ville): self
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): self
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
