@@ -40,6 +40,7 @@ class AnnonceFixtures extends Fixture
                     ->setVille($faker->city())
                     ->setDate($faker->dateTimeBetween('-6 months'))
                     ->settype($faker->word())
+                    ->setImageCover('http://via.placeholder.com/400x250')
                     ->setUser($user)
             ;
 

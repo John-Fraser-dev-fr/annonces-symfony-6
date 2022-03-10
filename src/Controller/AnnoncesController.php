@@ -16,12 +16,10 @@ class AnnoncesController extends AbstractController
 
         $annonces = $repo->findAll();
 
-        $images = $repo2->findAll();
 
         return $this->render('annonces/index.html.twig', [
             'controller_name' => 'AnnoncesController',
             'annonces'=> $annonces,
-            'images'=>$images
         ]);
     }
 }

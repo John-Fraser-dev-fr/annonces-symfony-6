@@ -49,6 +49,9 @@ class Annonce
     #[ORM\Column(type: 'string', length: 255)]
     private $type;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $imageCover;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -205,6 +208,18 @@ class Annonce
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getImageCover(): ?string
+    {
+        return $this->imageCover;
+    }
+
+    public function setImageCover(string $imageCover): self
+    {
+        $this->imageCover = $imageCover;
 
         return $this;
     }
