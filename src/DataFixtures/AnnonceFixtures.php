@@ -36,9 +36,10 @@ class AnnonceFixtures extends Fixture
                     ->setNbPieces($faker->numberBetween($min= 1, $max=6))
                     ->setSurface($faker->numberBetween($min= 20, $max= 120))
                     ->setPrix($faker->numberBetween($min=90000, $max=400000))
-                    ->setCdPostal('12345')
+                    ->setCdPostal($faker->numberBetween($min=12538, $max=87290))
                     ->setVille($faker->city())
                     ->setDate($faker->dateTimeBetween('-6 months'))
+                    ->settype($faker->word())
                     ->setUser($user)
             ;
 

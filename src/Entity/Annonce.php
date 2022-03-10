@@ -46,6 +46,9 @@ class Annonce
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $type;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -190,6 +193,18 @@ class Annonce
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

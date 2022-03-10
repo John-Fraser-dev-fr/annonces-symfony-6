@@ -1,15 +1,65 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-{% endblock %}
+{% block title %}{% endblock %}
 
 {% block body %}
 
-    <h4 class="text-center mt-5 mb-5">Le site de référence de vente bien immobiliers entre particuliers.</h4>
-    <div class="text-center">
-        <button type="button" class="btn btn-primary btn-lg col-6 mb-5">Déposer une annonce</button>
-    </div>
-    <h4 class="text-center mt-5 mb-5">Nos annonces</h4>
-  
+	<h4 class="text-center mt-5 mb-5">Le site de référence de vente bien immobiliers entre particuliers.</h4>
+
+	<div class="text-center">
+		<button type="button" class="btn btn-primary btn-lg col-6 mb-5">Déposer une annonce</button>
+	</div>
+
+	<h4 class="text-center mt-5 mb-5">Nos annonces</h4>
+
+
+	<div class="row" style="justify-content:center">
+		{% for annonce in annonces %}
+
+			<div class="card mt-5 m-1 col-3 p-0">
+				<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+					<div class="carousel-indicators">
+						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+						<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+					</div>
+					<div class="carousel-inner">
+                        {% for image in images %}
+						<div class="carousel-item active">
+							<img src="{{image.image}}" class="d-block w-100" alt="...">
+						</div>
+                        {% endfor %}
+						
+					</div>
+					<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+						<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Previous</span>
+					</button>
+					<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+						<span class="carousel-control-next-icon" aria-hidden="true"></span>
+						<span class="visually-hidden">Next</span>
+					</button>
+				</div>
+				<div class="card-body">
+					<h6>
+						<b>{{annonce.type}}
+							{{annonce.nbpieces}}
+							pièces
+							{{annonce.surface}}
+							m²</b>
+					</h6>
+					<p class="card-text" style="color:grey">{{annonce.ville}}
+						{{annonce.cdpostal}}</p>
+					<p class="card-text" style="color: #0d6efd">
+						<b>{{annonce.prix | number_format(0, ' ', ' ')}}
+							€</b>
+					</p>
+				</div>
+			</div>
+
+
+		{% endfor %}
+	</div>
+
 
 {% endblock %}
