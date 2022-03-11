@@ -16,9 +16,17 @@
 
         {% for annonce in annonces %}
 	        <div class="card mt-5 m-1 col-3 p-0">
-		        <img src="{{annonce.imageCover}}">
+		        <a href="{{path( 'show_annonce', {'id' : annonce.id} )}}"><img src="{{annonce.imageCover}}" class="img-fluid" ></a>
 		        <div class="card-body">
-			        <h6><b>{{annonce.type}} {{annonce.nbpieces}} {% if annonce.nbpieces == 1 %} pièce {% else %} pièces{% endif %} {{annonce.surface}} m²</b></h6>
+			        <h6>
+			            <b>{{annonce.type}} {{annonce.nbpieces}} 
+						{% if annonce.nbpieces == 1 %} 
+						    pièce
+						{% else %}
+						    pièces
+						{% endif %} 
+						{{annonce.surface}} m²</b>
+					</h6>
                     <p class="card-text" style="color:grey">{{annonce.ville}} {{annonce.cdpostal}}</p>
                     <p class="card-text" style="color: #0d6efd"><b>{{annonce.prix | number_format(0, ' ', ' ')}} €</b></p>
 		        </div>
