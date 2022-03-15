@@ -9,3 +9,6 @@ kernel:
 index:
    path: /
    controller: 'App\Controller\AnnoncesController::index'
+
+
+

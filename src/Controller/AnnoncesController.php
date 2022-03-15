@@ -16,13 +16,19 @@ class AnnoncesController extends AbstractController
         $annonces = $repo->findAll();
 
         return $this->render('annonces/index.html.twig', [
-            'controller_name' => 'AnnoncesController',
             'annonces'=> $annonces,
         ]);
     }
 
 
-    #[Route('/{id}', name: 'show_annonce')]
+    #[Route('/add', name: 'add_annonce')]
+    public function add(): Response
+    {   
+        return $this->render('annonces/add.html.twig');
+    }
+
+
+    #[Route('/annonce/{id}', name: 'show_annonce')]
     public function show(AnnonceRepository $repo, $id, ImageRepository $repo2)
     {
         $annonce = $repo->find($id); 
@@ -34,4 +40,5 @@ class AnnoncesController extends AbstractController
             'images' => $images,
         ]);
     }
+
 }
