@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class UserController extends AbstractController
 {
@@ -47,9 +48,25 @@ class UserController extends AbstractController
 
 
     #[Route('/connexion', name: 'connexion')]
-    public function connexion(): Response
+    public function connexion(AuthenticationUtils $auth): Response
     {
-        return $this->render('user/connexion.html.twig');
+        //Obtenir une erreur de connexion s'il y en a une
+        $error = $auth->getLastAuthenticationError();
+
+        //Dernier nom entré par l'utilisateur
+        $lastUsername = $auth->getLastUsername();
+
+        return $this->render('user/connexion.html.twig', [
+            'error' => $error,
+            'lastUsername' => $lastUsername
+        ]);
+    }
+
+
+    #[Route('/deconnexion', name:'deconnexion')]
+    public function deconnexion()
+    {
+        return $this->redirectToRoute('app_annonces');
     }
 
     
