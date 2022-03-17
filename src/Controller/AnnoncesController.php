@@ -4,15 +4,18 @@ namespace App\Controller;
 
 use App\Entity\Annonce;
 use App\Form\AnnonceType;
-use App\Repository\AnnonceRepository;
-use App\Repository\ImageRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManager;
+use App\Repository\UserRepository;
+use App\Repository\ImageRepository;
+use App\Repository\AnnonceRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class AnnoncesController extends AbstractController
 {
@@ -29,7 +32,7 @@ class AnnoncesController extends AbstractController
 
 
     #[Route('/add', name: 'add_annonce')]
-    public function add(Request $request, EntityManagerInterface $entityManager, UserRepository $user): Response
+    public function add(Request $request, EntityManagerInterface $entityManager, UserRepository $user,  SluggerInterface $slugger): Response
     {   
         //Création d'un nouvel objet Annonce
         $annonce = new Annonce();
@@ -43,11 +46,32 @@ class AnnoncesController extends AbstractController
         if($formAnnonce->isSubmitted() && $formAnnonce->isValid())
         {
 
+            $annonceFile = $formAnnonce->get('imageCover')->getData();
+
+            if($annonceFile)
+            {
+                $originalFilename = pathinfo($annonceFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$annonceFile->guessExtension();
+
+              
+                $annonceFile->move(
+                    $this->getParameter('annonce_directory'),
+                    $newFilename
+                );
+             
+
+                $annonce->setImageCover($newFilename);
+            }
+
+
+
             //Récupération de l'id user
             $user = $this->getUser();
 
             $annonce->setDate(new \DateTime())
-                    ->setUser($user);
+                    ->setUser($user)
+                    ;
            
 
             //Enregistrement en BDD

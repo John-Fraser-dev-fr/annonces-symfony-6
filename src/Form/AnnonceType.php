@@ -6,6 +6,7 @@ use App\Entity\Annonce;
 use Doctrine\DBAL\Types\FloatType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -27,7 +28,7 @@ class AnnonceType extends AbstractType
             ->add('cd_postal', IntegerType::class)
             ->add('ville', TextType::class)
             ->add('type', TextType::class)
-            ->add('imageCover', UrlType::class)
+            ->add('imageCover', FileType::class)
             ->add('Ajouter', SubmitType::class)
         ;
     }

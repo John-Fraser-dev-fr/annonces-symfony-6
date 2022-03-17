@@ -12,11 +12,12 @@
 
 	<h4 class="text-center mt-5 mb-5">Nos annonces</h4>
 
-    <div class="row" style="justify-content:center" >
+<img src="annonces-symfony-6/uploads/images/annonce/visuel5.jpeg" alt="coucou">
+    <div class="row" style="justify-content:center" >   
 
         {% for annonce in annonces %}
 	        <div class="card mt-5 m-1 col-3 p-0">
-		        <a href="{{path( 'show_annonce', {'id' : annonce.id} )}}"><img src="{{annonce.imageCover}}" class="img-fluid" ></a>
+		        <a href="{{path( 'show_annonce', {'id' : annonce.id} )}}"><img src="uploads/images/annonce/{{annonce.imageCover}}" class="img-fluid"></a>
 		        <div class="card-body">
 			        <h6>
 			            <b>{{annonce.type}} {{annonce.nbpieces}} 
