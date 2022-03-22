@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Annonce;
+use App\Entity\Image;
 use App\Form\AnnonceType;
+use App\Form\ImageType;
 use Doctrine\ORM\EntityManager;
 use App\Repository\UserRepository;
 use App\Repository\ImageRepository;
@@ -40,8 +42,10 @@ class AnnoncesController extends AbstractController
         //Formulaire relié à l'entité Annonce
         $formAnnonce = $this->createForm(AnnonceType::class, $annonce);
 
+
         //Analyse de la requete
         $formAnnonce->handleRequest($request);
+        
 
         if($formAnnonce->isSubmitted() && $formAnnonce->isValid())
         {
@@ -54,26 +58,24 @@ class AnnoncesController extends AbstractController
                 $safeFilename = $slugger->slug($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$annonceFile->guessExtension();
 
-              
                 $annonceFile->move(
                     $this->getParameter('annonce_directory'),
                     $newFilename
                 );
              
-
                 $annonce->setImageCover($newFilename);
             }
-
 
 
             //Récupération de l'id user
             $user = $this->getUser();
 
+        
             $annonce->setDate(new \DateTime())
                     ->setUser($user)
-                    ;
-           
+            ;
 
+            
             //Enregistrement en BDD
             $entityManager->persist($annonce);
             $entityManager->flush();
@@ -83,7 +85,7 @@ class AnnoncesController extends AbstractController
 
 
         return $this->render('annonces/add.html.twig',[
-            'formAnnonce'=> $formAnnonce->createView()
+            'formAnnonce'=> $formAnnonce->createView(),
         ]);
     }
 
@@ -104,3 +106,5 @@ class AnnoncesController extends AbstractController
     }
 
 }
+
+
