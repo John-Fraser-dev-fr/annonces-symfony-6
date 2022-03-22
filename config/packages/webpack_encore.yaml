@@ -1,6 +1,6 @@
 webpack_encore:
     # The path where Encore is building the assets - i.e. Encore.setOutputPath()
-    output_path: '%kernel.project_dir%/public/build'
+    output_path: '%kernel.project_dir%/public/uploads/images'
     # If multiple builds are defined (as shown below), you can disable the default build:
     # output_path: false
 
@@ -35,8 +35,8 @@ webpack_encore:
     # cache: true
 
 framework:
-    assets:
-        json_manifest_path: '%kernel.project_dir%/public/build/manifest.json'
+    assets: 
+        
 
 #when@prod:
 #    webpack_encore:
