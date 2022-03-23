@@ -38,33 +38,55 @@ class AnnoncesController extends AbstractController
     {   
         //Création d'un nouvel objet Annonce
         $annonce = new Annonce();
-
         //Formulaire relié à l'entité Annonce
         $formAnnonce = $this->createForm(AnnonceType::class, $annonce);
 
-
         //Analyse de la requete
         $formAnnonce->handleRequest($request);
-        
 
         if($formAnnonce->isSubmitted() && $formAnnonce->isValid())
         {
-
+            //Récupere l'image cover transmise
             $annonceFile = $formAnnonce->get('imageCover')->getData();
 
             if($annonceFile)
             {
-                $originalFilename = pathinfo($annonceFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$annonceFile->guessExtension();
-
+                //Génére un nouveau nom de fichier pour l'image de couverture
+                $fichierImageCover = md5(uniqid()).'.'.$annonceFile->guessExtension();
+                
+                //Envoie du fichier dans public/images
                 $annonceFile->move(
                     $this->getParameter('annonce_directory'),
-                    $newFilename
+                    $fichierImageCover
                 );
              
-                $annonce->setImageCover($newFilename);
+                $annonce->setImageCover($fichierImageCover);
             }
+
+
+            //Récupére les images
+            $images = $formAnnonce->get('images')->getData();
+
+            //Boucle sur les images
+            foreach($images as $image)
+            {
+                //Génére un nouveau nom de fichier pour les images
+                $fichierImages = md5(uniqid()).'.'.$image->guessExtension();
+
+                //Envoie des images dans public/images
+                $image->move(
+                    $this->getParameter('annonce_directory'),
+                    $fichierImages
+                );
+
+                 // On crée l'image dans la base de données
+                $img = new Image();
+                $img->setImage($fichierImages);
+                $annonce->addImage($img);
+                         
+                
+            }
+
 
 
             //Récupération de l'id user
@@ -73,11 +95,15 @@ class AnnoncesController extends AbstractController
         
             $annonce->setDate(new \DateTime())
                     ->setUser($user)
+                    ;
+                    
             ;
 
             
             //Enregistrement en BDD
             $entityManager->persist($annonce);
+            $entityManager->persist($img);
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_annonces');
@@ -86,6 +112,7 @@ class AnnoncesController extends AbstractController
 
         return $this->render('annonces/add.html.twig',[
             'formAnnonce'=> $formAnnonce->createView(),
+            
         ]);
     }
 

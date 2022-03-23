@@ -33,7 +33,6 @@ class Annonce
     private $prix;
 
     #[ORM\OneToMany(mappedBy: 'annonce', targetEntity: Image::class, orphanRemoval: true)]
-    private $images;
 
     #[ORM\Column(type: 'integer')]
     private $cd_postal;
