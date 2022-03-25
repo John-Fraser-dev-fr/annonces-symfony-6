@@ -13,26 +13,17 @@
     {% else %}
         {{ form_start(formAnnonce) }}
             <div class="row">
-                <div class="col">
+                <div class="col-6">
+
                     {{ form(formAnnonce) }}
 
-                  
-                    <input type="button" id="more_fields" onclick="add_fields();" value="Add More" />
                 </div>
             </div>
         {{ form_end(formAnnonce) }}
     {% endif %}
 
 
-<script>
 
-function add_fields() {
-   var d = document.getElementById("annonce_images");
-  
-   d.innerHTML += '<br><input type="file" id="annonce_images" name="annonce[images][]" multiple="multiple" class="form-control">';
-}
-
-</script>
 {% endblock body %}
 
 

@@ -15,9 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 
 class AnnoncesController extends AbstractController
 {
@@ -64,7 +63,7 @@ class AnnoncesController extends AbstractController
             }
 
 
-            //Récupére les images
+            //Récupére le(s) image(s)
             $images = $formAnnonce->get('images')->getData();
 
             //Boucle sur les images
@@ -79,14 +78,19 @@ class AnnoncesController extends AbstractController
                     $fichierImages
                 );
 
-                 // On crée l'image dans la base de données
+                
+                //Création d'un nouvel objet Image
                 $img = new Image();
-                $img->setImage($fichierImages);
-                $annonce->addImage($img);
-                         
+
+                
+                $img->setImage($fichierImages)
+                    ->setAnnonce($annonce)
+                ;
+                    
+                //Enregistrement en  BDD
+                $entityManager->persist($img);  
                 
             }
-
 
 
             //Récupération de l'id user
@@ -95,16 +99,14 @@ class AnnoncesController extends AbstractController
         
             $annonce->setDate(new \DateTime())
                     ->setUser($user)
-                    ;
-                    
+                    ->addImage($img)                    
             ;
 
-            
             //Enregistrement en BDD
             $entityManager->persist($annonce);
-            $entityManager->persist($img);
-
+          
             $entityManager->flush();
+
 
             return $this->redirectToRoute('app_annonces');
         }
@@ -133,5 +135,7 @@ class AnnoncesController extends AbstractController
     }
 
 }
+
+
 
 
