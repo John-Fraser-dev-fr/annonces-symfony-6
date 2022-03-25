@@ -134,6 +134,27 @@ class AnnoncesController extends AbstractController
         ]);
     }
 
+    #[Route('/mes_annonces/{id}', name: 'annonceByUser')]
+    public function annoncesByUser(AnnonceRepository $repo, $id, ImageRepository $repo2, UserRepository $repo3)
+    {
+        //Récupére les annonces correspondant à l'utilisateur
+        $annoncesByUser = $repo->findBy(['user' => $id]);
+
+        //Boucle pour récupérer les ID des annonces
+        foreach($annoncesByUser as $annoncesByUsers)
+        {
+            $id_annonce = $annoncesByUsers->getId();
+        }
+
+        //Récupére les images correspondantes à l'id annonce
+        $images = $repo2->findBy(['annonce' => $id_annonce]);
+
+        return $this->render('user/annonces.html.twig',[
+            'annoncesByUsers' => $annoncesByUser,
+            'images' => $images
+        ]);
+    }
+
 }
 
 
