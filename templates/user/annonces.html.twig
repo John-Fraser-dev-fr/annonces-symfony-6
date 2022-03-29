@@ -6,63 +6,49 @@
 
 	<h4>Mes annonces</h4>
 
-	{% for annoncesByUser in annoncesByUsers %}
 
-		<div class="col-5">
-			<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-				<div class="carousel-inner">
-					<div class="carousel-item active">
-						<img src="/images/{{annoncesByUser.imageCover}}" class="img-fluid" style="width:550px;height:350px" alt="...">
-					</div>
-					{% for image in images %}
-						<div class="carousel-item">
-							<img src="/images/{{image.image}}" class="img-fluid" style="width:550px;height:350px" alt="...">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th scope="col">Type</th>
+				<th scope="col">Ville</th>
+				<th scope="col">Prix</th>
+				<th scope="col">Titre</th>
+				<th scope="col">Image</th>
+				<th scope="col"></th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for annoncesByUser in annoncesByUsers %}
+
+				<tr>
+
+					<td>{{annoncesByUser.type}}
+						{{annoncesByUser.nbpieces}}
+						{% if annoncesByUser.nbpieces == 1 %}
+							pièce
+						{% else %}
+							pièces
+						{% endif %}
+						{{annoncesByUser.surface}}
+						m²</td>
+					<td>{{annoncesByUser.ville}}</td>
+					<td>{{annoncesByUser.prix | number_format(0, ' ', ' ')}}
+						€</td>
+					<td>{{annoncesByUser.titre}}</td>
+					<td><img src="/images/{{annoncesByUser.imageCover}}" class="img-fluid" style="width:90px;height:55px" alt="..."></td>
+					<td>
+						<div class="btn-group">
+							<button type="button" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="modifier">Modifier</button>
+							<button type="button" class="btn btn-primary">Supprimer</button>
 						</div>
-					{% endfor %}
-				</div>
-				<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-					<span class="visually-hidden">Previous</span>
-				</button>
-				<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-					<span class="carousel-control-next-icon" aria-hidden="true"></span>
-					<span class="visually-hidden">Next</span>
-				</button>
-			</div>
+					</td>
 
-			<div>
-				<h5 class="mt-2">
-					<b>Vente
-						{{annoncesByUser.type}}</b>
-				</h5>
-				<div style="display:flex; justify-content: space-between;">
-					<div>
-						<p style="margin-bottom: 0.1rem">{{annoncesByUser.nbpieces}}
-							{% if annoncesByUser.nbpieces == 1 %}
-								pièce
-							{% else %}
-								pièces
-							{% endif %}
-							{{annoncesByUser.surface}}
-							m²</p>
-						<p style="color:grey">
-							<small>{{annoncesByUser.ville}}
-								({{annoncesByUser.cdpostal}})</small>
-						</p>
-					</div>
-					<div>
-						<h5>{{annoncesByUser.prix | number_format(0, ' ', ' ')}}
-							€</h5>
-					</div>
-				</div>
-			</div>
-			<div>
-				<h5 class="mt-2">
-					<b>Description</b>
-				</h5>
-				<p>{{annoncesByUser.titre}}</p>
-				<p>{{annoncesByUser.description}}</p>
-			</div>
-		</div>
-	{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+
 {% endblock %}
