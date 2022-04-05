@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Annonce;
 use App\Entity\Image;
+use App\Form\AnnonceEditType;
 use App\Form\AnnonceType;
 use App\Form\ImageType;
 use Doctrine\ORM\EntityManager;
@@ -27,14 +28,14 @@ class AnnoncesController extends AbstractController
         $annonces = $repo->findAll();
 
         return $this->render('annonces/index.html.twig', [
-            'annonces'=> $annonces,
+            'annonces' => $annonces,
         ]);
     }
 
 
     #[Route('/add', name: 'add_annonce')]
-    public function add(Request $request, EntityManagerInterface $entityManager, UserRepository $user,  SluggerInterface $slugger): Response
-    {   
+    public function add(Request $request, EntityManagerInterface $entityManager, UserRepository $user): Response
+    {
         //Création d'un nouvel objet Annonce
         $annonce = new Annonce();
         //Formulaire relié à l'entité Annonce
@@ -43,22 +44,20 @@ class AnnoncesController extends AbstractController
         //Analyse de la requete
         $formAnnonce->handleRequest($request);
 
-        if($formAnnonce->isSubmitted() && $formAnnonce->isValid())
-        {
+        if ($formAnnonce->isSubmitted() && $formAnnonce->isValid()) {
             //Récupere l'image cover transmise
             $annonceFile = $formAnnonce->get('imageCover')->getData();
 
-            if($annonceFile)
-            {
+            if ($annonceFile) {
                 //Génére un nouveau nom de fichier pour l'image de couverture
-                $fichierImageCover = md5(uniqid()).'.'.$annonceFile->guessExtension();
-                
+                $fichierImageCover = md5(uniqid()) . '.' . $annonceFile->guessExtension();
+
                 //Envoie du fichier dans public/images
                 $annonceFile->move(
                     $this->getParameter('annonce_directory'),
                     $fichierImageCover
                 );
-             
+
                 $annonce->setImageCover($fichierImageCover);
             }
 
@@ -67,10 +66,9 @@ class AnnoncesController extends AbstractController
             $images = $formAnnonce->get('images')->getData();
 
             //Boucle sur les images
-            foreach($images as $image)
-            {
+            foreach ($images as $image) {
                 //Génére un nouveau nom de fichier pour les images
-                $fichierImages = md5(uniqid()).'.'.$image->guessExtension();
+                $fichierImages = md5(uniqid()) . '.' . $image->guessExtension();
 
                 //Envoie des images dans public/images
                 $image->move(
@@ -78,33 +76,30 @@ class AnnoncesController extends AbstractController
                     $fichierImages
                 );
 
-                
+
                 //Création d'un nouvel objet Image
                 $img = new Image();
 
-                
+
                 $img->setImage($fichierImages)
-                    ->setAnnonce($annonce)
-                ;
-                    
+                    ->setAnnonce($annonce);
+
                 //Enregistrement en  BDD
-                $entityManager->persist($img);  
-                
+                $entityManager->persist($img);
             }
 
 
             //Récupération de l'id user
             $user = $this->getUser();
 
-        
+
             $annonce->setDate(new \DateTime())
-                    ->setUser($user)
-                    ->addImage($img)                    
-            ;
+                ->setUser($user)
+                ->addImage($img);
 
             //Enregistrement en BDD
             $entityManager->persist($annonce);
-          
+
             $entityManager->flush();
 
 
@@ -112,9 +107,9 @@ class AnnoncesController extends AbstractController
         }
 
 
-        return $this->render('annonces/add.html.twig',[
-            'formAnnonce'=> $formAnnonce->createView(),
-            
+        return $this->render('annonces/add.html.twig', [
+            'formAnnonce' => $formAnnonce->createView(),
+
         ]);
     }
 
@@ -123,32 +118,123 @@ class AnnoncesController extends AbstractController
     public function show(AnnonceRepository $repo, $id, ImageRepository $repo2)
     {
         //Récupére l'annonce grace à l'ID (GET)
-        $annonce = $repo->find($id); 
+        $annonce = $repo->find($id);
 
         //Récupére les images correspondantes à l'ID de l'annonce
-        $images = $repo2->findBy(['annonce'=>$id]); 
+        $images = $repo2->findBy(['annonce' => $id]);
 
-        return $this->render('annonces/show.html.twig',[
+        return $this->render('annonces/show.html.twig', [
             'annonce' => $annonce,
             'images' => $images,
         ]);
     }
 
-    #[Route('/mes_annonces/{id}', name: 'annonceByUser')]
-    public function annoncesByUser(AnnonceRepository $repo, $id, ImageRepository $repo2, UserRepository $repo3)
+    #[Route('/mes_annonces', name: 'annoncesByUser')]
+    public function annoncesByUser(AnnonceRepository $repo)
     {
+
+        $user = $this->getUser();
+
         //Récupére les annonces correspondant à l'utilisateur
-        $annoncesByUser = $repo->findBy(['user' => $id]);
+        $annoncesByUsers = $repo->findBy(['user' => $user]);
 
-
-        return $this->render('user/annonces.html.twig',[
-            'annoncesByUsers' => $annoncesByUser,
-           
+        return $this->render('user/annonces.html.twig', [
+            'annoncesByUsers' => $annoncesByUsers,
         ]);
+
     }
 
+
+    #[Route('/annonces/{id}/edit', name: 'edit_annonce')]
+    public function editAnnonce(AnnonceRepository $repo, ImageRepository $repo2, Request $request,$id,EntityManagerInterface $entityManager)
+    {
+        //Récupére l'annonce concerné
+        $annonce = $repo->find($id);
+        
+        //Récupére les images correspondantes à l'ID de l'annonce
+        $imagesByAnnonces = $repo2->findBy(['annonce' => $id]);
+
+        //Formulaire relié à l'entité Annonce
+        $formEdit = $this->createForm(AnnonceEditType::class, $annonce);
+
+        //Analyse de la requete
+        $formEdit->handleRequest($request);
+
+        if ($formEdit->isSubmitted() && $formEdit->isValid())
+        {
+            //Récupere l'image cover transmise
+            $annonceFile = $formEdit->get('imageCover')->getData();
+
+            if($annonceFile) 
+            {
+                //Génére un nouveau nom de fichier pour l'image de couverture
+                $fichierImageCover = md5(uniqid()) . '.' . $annonceFile->guessExtension();
+ 
+                //Envoie du fichier dans public/images
+                $annonceFile->move(
+                    $this->getParameter('annonce_directory'),
+                    $fichierImageCover
+                );
+ 
+                $annonce->setImageCover($fichierImageCover);
+            }
+ 
+ 
+            //Récupére le(s) image(s) transmise
+            $images = $formEdit->get('images')->getData();
+ 
+            //Boucle sur les images
+            foreach ($images as $image) 
+            {
+                //Génére un nouveau nom de fichier pour les images
+                $fichierImages = md5(uniqid()) . '.' . $image->guessExtension();
+ 
+                
+                //Envoie des images dans public/images
+                $image->move(
+                    $this->getParameter('annonce_directory'),
+                    $fichierImages
+                );
+
+
+                //Création d'un nouvel objet Image
+                $img = new Image();
+
+
+              
+                $img->setImage($fichierImages)
+                    ->setAnnonce($annonce)
+                ;
+                
+            
+ 
+                //Enregistrement en  BDD
+                $entityManager->persist($img);
+            }
+
+            //Récupération de l'id user
+            $user = $this->getUser();
+
+            $annonce->setDate(new \DateTime())
+                    ->setUser($user)
+            ;
+                    
+            $entityManager->persist($annonce);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_annonces');
+        }
+        else
+        {}
+
+
+
+        
+        return $this->render('annonces/edit.html.twig',[
+            'annonce' => $annonce,
+            'imagesByAnnonces' => $imagesByAnnonces,
+            'formEdit' => $formEdit->createView()
+        ]);
+
+    }
 }
-
-
-
-

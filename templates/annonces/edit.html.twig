@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+
+<h4>Modifier votre annonce n°{{annonce.id}}</h4>
+
+{{ form_start(formEdit) }}
+
+
+<div class="row">
+	<div class="col-6">
+		<div>
+			{{ form_label(formEdit, 'Titre') }}
+			{{ form_widget(formEdit.titre, { 'attr': {
+                'value': annonce.titre, } }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit, 'description') }}
+			{{ form_widget(formEdit.description, { 'attr': {
+                'value': annonce.description } }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit, 'Nombre de pièces') }}
+			{{ form_widget(formEdit.nb_pieces, { 'attr': {
+                'value': annonce.nbpieces } }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit, 'Surface') }}
+			{{ form_widget(formEdit.surface, { 'attr': {
+                'value': annonce.surface } }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit, 'Prix') }}
+			{{ form_widget(formEdit.prix, { 'attr': {
+                'value': annonce.prix } }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit, 'Code postal') }}
+			{{ form_widget(formEdit.cd_postal, { 'attr': {
+                'value': annonce.cdpostal } }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit, 'Ville') }}
+			{{ form_widget(formEdit.ville, { 'attr': {
+                'value': annonce.ville } }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit, 'Type de bien') }}
+			{{ form_widget(formEdit.type, { 'attr': {
+                'value': annonce.type} }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit, 'Image de couverture') }}
+			<div>
+				<img src="/images/{{annonce.imageCover}}" class="img-fluid" style="width:220px;height:140px" alt="...">
+			</div>
+			 {{ form_widget(formEdit.imageCover, { 'attr': {
+                'class': 'image'} }) 
+            }}
+		</div>
+
+		<div>
+			{{ form_label(formEdit.images, 'D\'autres images') }}
+            <div style=" display:flex; width: 100%; white-space: nowrap; overflow-x: scroll; overflow-y: hidden;">
+                <div>
+                    {% for imagesByAnnonce in imagesByAnnonces %}		
+				        <img src="/images/{{imagesByAnnonce.image}}" class="img-fluid"  style="width:220px;height:140px" alt="...">		
+			        {% endfor %}
+                </div>
+            </div>
+            {{ form_widget(formEdit.images, { 'attr': {
+                'class': 'images'} }) 
+            }}
+            </div>
+
+            
+        </div>
+    </div>
+    {{ form_end(formEdit) }}
+
+
+
+
+{% endblock body %}

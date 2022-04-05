@@ -40,12 +40,14 @@
 					<td><img src="/images/{{annoncesByUser.imageCover}}" class="img-fluid" style="width:90px;height:55px" alt="..."></td>
 					<td>
 						<div class="btn-group">
-							<button type="button" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="modifier">Modifier</button>
+							<a href="{{path( 'edit_annonce', {'id' : annoncesByUser.id} )}}">Modifier</a>
 							<button type="button" class="btn btn-primary">Supprimer</button>
 						</div>
 					</td>
-
 				</tr>
+
+                
+				
 			{% endfor %}
 		</tbody>
 	</table>
