@@ -103,6 +103,8 @@ class AnnoncesController extends AbstractController
             $entityManager->flush();
 
 
+            $this->addFlash('success', 'Votre annonce a bien été créée !');
+
             return $this->redirectToRoute('app_annonces');
         }
 
@@ -222,6 +224,8 @@ class AnnoncesController extends AbstractController
             $entityManager->persist($annonce);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Votre annonce a bien été modifié !');
+
             return $this->redirectToRoute('app_annonces');
         }
         else
@@ -247,11 +251,14 @@ class AnnoncesController extends AbstractController
         $entityManager->remove($image);
         $entityManager->flush();
 
-        $this->addFlash('message', 'Annonce bien supprimé');
-       
-        return $this->redirectToRoute('app_annonces');
+        $this->addFlash('danger', 'Votre image a bien été supprimé !');
+
+        return $this->redirectToRoute('edit_annonce', [
+            'id' => $image->getAnnonce()->getId()
+        ]);
+        
     }
-    
+
 
     #[Route('/annonces/{id}/supp', name: 'supp_annonce')]
     public function supprimerAnnonce(AnnonceRepository $repoAnnonce, $id, EntityManagerInterface $entityManager){
@@ -261,8 +268,8 @@ class AnnoncesController extends AbstractController
         $entityManager->remove($annonce);
         $entityManager->flush();
 
-        $this->addFlash('message', 'Annonce bien supprimé');
-       
-        return $this->redirectToRoute('app_annonces');
+        $this->addFlash('danger', 'Votre annonce a bien été supprimé !');
+
+        return $this->redirectToRoute('annoncesByUser');
     }
 }
