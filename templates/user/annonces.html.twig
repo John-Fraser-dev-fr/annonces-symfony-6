@@ -40,8 +40,8 @@
 					<td><img src="/images/{{annoncesByUser.imageCover}}" class="img-fluid" style="width:90px;height:55px" alt="..."></td>
 					<td>
 						<div class="btn-group">
-							<a href="{{path( 'edit_annonce', {'id' : annoncesByUser.id} )}}">Modifier</a>
-							<button type="button" class="btn btn-primary">Supprimer</button>
+							<button class="btn btn-primary"><a href="{{path( 'edit_annonce', {'id' : annoncesByUser.id} )}}" style="color:white; text-decoration: none">Modifier</a>
+                            <button class="btn btn-primary"><a href="{{path( 'supp_annonce', {'id' : annoncesByUser.id} )}}" style="color:white; text-decoration: none">Supprimer</a></button>
 						</div>
 					</td>
 				</tr>

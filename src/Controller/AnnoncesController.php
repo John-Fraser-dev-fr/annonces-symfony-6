@@ -246,6 +246,22 @@ class AnnoncesController extends AbstractController
 
         $entityManager->remove($image);
         $entityManager->flush();
+
+        $this->addFlash('message', 'Annonce bien supprimé');
+       
+        return $this->redirectToRoute('app_annonces');
+    }
+    
+
+    #[Route('/annonces/{id}/supp', name: 'supp_annonce')]
+    public function supprimerAnnonce(AnnonceRepository $repoAnnonce, $id, EntityManagerInterface $entityManager){
+
+        $annonce = $repoAnnonce->find($id);
+
+        $entityManager->remove($annonce);
+        $entityManager->flush();
+
+        $this->addFlash('message', 'Annonce bien supprimé');
        
         return $this->redirectToRoute('app_annonces');
     }
