@@ -71,6 +71,7 @@
 			{{ form_label(formEdit, 'Image de couverture') }}
 			<div>
 				<img src="/images/{{annonce.imageCover}}" class="img-fluid" style="width:220px;height:140px" alt="...">
+                 <i class="bi bi-trash-fill"></i>
 			</div>
 			 {{ form_widget(formEdit.imageCover, { 'attr': {
                 'class': 'image'} }) 
@@ -79,12 +80,17 @@
 
 		<div>
 			{{ form_label(formEdit.images, 'D\'autres images') }}
-            <div style=" display:flex; width: 100%; white-space: nowrap; overflow-x: scroll; overflow-y: hidden;">
+            <div style=" ">
                 <div>
-                    {% for imagesByAnnonce in imagesByAnnonces %}		
-				        <img src="/images/{{imagesByAnnonce.image}}" class="img-fluid"  style="width:220px;height:140px" alt="...">		
+                    {% for imagesByAnnonce in imagesByAnnonces %}	
+                       
+                           <img src="/images/{{imagesByAnnonce.image}}" class="img-fluid"  style="width:220px;height:140px" alt="...">	
+                      
+                            <a href="{{path( 'supp_image', {'id' : imagesByAnnonce.id} )}}"><i class="bi bi-trash-fill"></i></a>
+                       	 
 			        {% endfor %}
                 </div>
+                
             </div>
             {{ form_widget(formEdit.images, { 'attr': {
                 'class': 'images'} }) 

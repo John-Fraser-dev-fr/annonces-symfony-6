@@ -237,4 +237,16 @@ class AnnoncesController extends AbstractController
         ]);
 
     }
+
+
+    #[Route('/annonces/image/{id}/supp', name: 'supp_image')]
+    public function supprimerImage(ImageRepository $RepoImage, $id, EntityManagerInterface $entityManager){
+
+        $image = $RepoImage->find($id);
+
+        $entityManager->remove($image);
+        $entityManager->flush();
+       
+        return $this->redirectToRoute('app_annonces');
+    }
 }
