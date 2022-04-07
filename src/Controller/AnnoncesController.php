@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Symfony\Component\Filesystem\Filesystem;
 
 class AnnoncesController extends AbstractController
 {
@@ -202,14 +202,10 @@ class AnnoncesController extends AbstractController
                 //Création d'un nouvel objet Image
                 $img = new Image();
 
-
-              
                 $img->setImage($fichierImages)
                     ->setAnnonce($annonce)
                 ;
                 
-            
- 
                 //Enregistrement en  BDD
                 $entityManager->persist($img);
             }
@@ -231,9 +227,6 @@ class AnnoncesController extends AbstractController
         else
         {}
 
-
-
-        
         return $this->render('annonces/edit.html.twig',[
             'annonce' => $annonce,
             'imagesByAnnonces' => $imagesByAnnonces,
@@ -244,32 +237,64 @@ class AnnoncesController extends AbstractController
 
 
     #[Route('/annonces/image/{id}/supp', name: 'supp_image')]
-    public function supprimerImage(ImageRepository $RepoImage, $id, EntityManagerInterface $entityManager){
+    public function supprimerImage(ImageRepository $RepoImage, $id, EntityManagerInterface $entityManager)
+    {
 
-        $image = $RepoImage->find($id);
+        $images = $RepoImage->find($id);
 
-        $entityManager->remove($image);
+        $cheminImage = $this->getParameter('annonce_directory') . '/' . $images->getImage();
+
+        if(file_exists($cheminImage))
+        {
+            unlink($cheminImage);
+        }
+
+        $entityManager->remove($images);
         $entityManager->flush();
 
         $this->addFlash('danger', 'Votre image a bien été supprimé !');
 
         return $this->redirectToRoute('edit_annonce', [
-            'id' => $image->getAnnonce()->getId()
+            'id' => $images->getAnnonce()->getId()
         ]);
         
     }
 
 
+
     #[Route('/annonces/{id}/supp', name: 'supp_annonce')]
-    public function supprimerAnnonce(AnnonceRepository $repoAnnonce, $id, EntityManagerInterface $entityManager){
+    public function supprimerAnnonce(AnnonceRepository $repoAnnonce, ImageRepository $repoImage ,$id, EntityManagerInterface $entityManager)
+    {
 
         $annonce = $repoAnnonce->find($id);
 
+        $images = $repoImage->findBy(['annonce' => $id]);
+
+        $imageCover = $annonce->getImageCover();
+        $cheminCoverImage = $this->getParameter('annonce_directory') . '/' . $imageCover;
+
+        if(file_exists($cheminCoverImage))
+        {
+            unlink($cheminCoverImage);
+        }
+
+        foreach($images as $image)
+        {
+            $cheminImage = $this->getParameter('annonce_directory') . '/' . $image->getImage();
+
+            if(file_exists($cheminImage))
+            {
+                unlink($cheminImage);
+            }
+        }
+  
         $entityManager->remove($annonce);
         $entityManager->flush();
 
         $this->addFlash('danger', 'Votre annonce a bien été supprimé !');
 
         return $this->redirectToRoute('annoncesByUser');
+
     }
 }
+
