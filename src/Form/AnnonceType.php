@@ -40,7 +40,6 @@ class AnnonceType extends AbstractType
                 'label' => 'Ajouter d\'autres images',
                 'multiple' => true,
                 'mapped' => false,
-                'required' => false
                 ])
             ->add('valider', SubmitType::class)
 

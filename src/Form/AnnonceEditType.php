@@ -26,7 +26,9 @@ class AnnonceEditType extends AbstractType
         ->add('ville', TextType::class)
         ->add('type', TextType::class)
         ->add('imageCover', FileType::class,[
-            'data_class' => null
+            'data_class' => null,
+            'required' => false,
+            'mapped' => false
         ])
         ->add('images', FileType::class,[
             'multiple' => true,

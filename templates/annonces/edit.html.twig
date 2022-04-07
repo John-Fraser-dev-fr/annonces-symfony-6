@@ -67,40 +67,99 @@
             }}
 		</div>
 
-		<div>
-			{{ form_label(formEdit, 'Image de couverture') }}
+		<div class="mt-5">
+			
 			<div>
 				<img src="/images/{{annonce.imageCover}}" class="img-fluid" style="width:220px;height:140px" alt="...">
 			</div>
-			 {{ form_widget(formEdit.imageCover, { 'attr': {
-                'class': 'image'} }) 
-            }}
+
+            <div class="d-flex" style="justify-content: space-between">
+                <div>
+                    {{ form_label(formEdit, 'Modifier l\'image de couverture') }}
+                </div>
+                <div>
+                    <i class="bi bi-plus-circle-fill" id="show_hide_cover" style="color:green"></i>
+                </div>
+            </div>
+
+            <div id="champ_imageCover" style="display: none">
+			    {{ form_widget(formEdit.imageCover)}}
+            </div>
+
 		</div>
 
-		<div>
-			{{ form_label(formEdit.images, 'D\'autres images') }}
-            <div style=" ">
+		<div class="mt-5">
+            <div class="mb-3">
                 <div>
                     {% for imagesByAnnonce in imagesByAnnonces %}	
                        
                            <img src="/images/{{imagesByAnnonce.image}}" class="img-fluid"  style="width:220px;height:140px" alt="...">	
                       
-                            <a href="{{path( 'supp_image', {'id' : imagesByAnnonce.id} )}}"><i class="bi bi-trash-fill"></i></a>
+                            <a href="{{path( 'supp_image', {'id' : imagesByAnnonce.id} )}}"><i class="bi bi-trash-fill" style="color:red" ></i></a>
                        	 
 			        {% endfor %}
                 </div>
                 
             </div>
-            {{ form_widget(formEdit.images, { 'attr': {
-                'class': 'images'} }) 
-            }}
+
+            <div class="d-flex" style="justify-content: space-between">
+                <div>
+                    {{ form_label(formEdit.images, 'Ajouter d\'autres images') }}
+                </div>
+                <div>
+                    <i class="bi bi-plus-circle-fill" id="show_hide" style="color:green"></i>
+                </div>
             </div>
 
+            <div id="champ_images" style="display: none">
+
+
+             {{ form_widget(formEdit.images)}}
             
+            
+            </div>
+         
+           
         </div>
+
+            
     </div>
+</div>
     {{ form_end(formEdit) }}
 
+
+
+
+
+<script type="text/javascript">
+
+let show_hide = document.getElementById("show_hide");
+
+let champ_images = document.getElementById("champ_images");
+
+show_hide.addEventListener("click", () =>{
+    if(getComputedStyle(champ_images).display != "none"){
+        champ_images.style.display = "none";
+    }else{
+        champ_images.style.display = "block";
+    }
+})
+
+
+let show_hide_cover = document.getElementById("show_hide_cover");
+
+let champ_imageCover = document.getElementById("champ_imageCover");
+
+show_hide_cover.addEventListener("click", () =>{
+    if(getComputedStyle(champ_imageCover).display != "none"){
+        champ_imageCover.style.display = "none";
+    }else{
+        champ_imageCover.style.display = "block";
+    }
+})
+
+
+</script>
 
 
 

@@ -180,6 +180,7 @@ class AnnoncesController extends AbstractController
  
                 $annonce->setImageCover($fichierImageCover);
             }
+            else{}
  
  
             //Récupére le(s) image(s) transmise
