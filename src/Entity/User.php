@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity('email', message:'Cet adresse email existe déjà !')]
@@ -26,6 +27,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $prenom;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\Email(
+        message : "Votre email n'est pas valide !"
+    )]
     private $email;
 
     #[ORM\Column(type: 'string', length: 255)]

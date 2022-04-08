@@ -6,6 +6,7 @@ use App\Repository\AnnonceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: AnnonceRepository::class)]
@@ -18,9 +19,17 @@ class Annonce
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\Length(
+        min: 10, 
+        minMessage:'Votre titre doit faire au minimum {{ limit }} caractères !',
+        max: 30, 
+        maxMessage:'Votre titre doit faire au maximum {{ limit }} caractères !')]
     private $titre;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\Length(
+        min: 50, 
+        minMessage:'Votre description doit faire au minimum {{ limit }} caractères !',)]
     private $description;
 
     #[ORM\Column(type: 'integer')]
@@ -35,6 +44,11 @@ class Annonce
     #[ORM\OneToMany(mappedBy: 'annonce', targetEntity: Image::class, orphanRemoval: true)]
 
     #[ORM\Column(type: 'integer')]
+    #[Assert\Length(
+        min : 4,
+        max : 5,
+        minMessage : 'Le code postal doit comporter {{ limit }} caractères !',
+        maxMessage : 'Le code postal doit comporter {{ limit }} caractères !')]
     private $cd_postal;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -51,6 +65,11 @@ class Annonce
     private $type;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\File(
+        maxSize: "2000k",
+        mimeTypes: "application/jpeg, application/jpg",
+        mimeTypesMessage : "Veuillez télécharger votre image aux formats JPG ou JPEG !",
+        maxSizeMessage: "Votre image ne doit pas dépasser 2 Mo !")]
     private $imageCover;
 
     public function __construct()

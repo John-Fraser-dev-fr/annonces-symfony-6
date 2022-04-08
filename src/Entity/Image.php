@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 class Image
@@ -14,6 +16,11 @@ class Image
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\File(
+        maxSize: "2000k",
+        mimeTypes: "application/jpeg, application/jpg",
+        mimeTypesMessage : "Veuillez télécharger votre image aux formats JPG ou JPEG !",
+        maxSizeMessage: "Votre image ne doit pas dépasser 2 Mo !")]
     private $image;
 
     #[ORM\ManyToOne(targetEntity: Annonce::class, inversedBy: 'images')]

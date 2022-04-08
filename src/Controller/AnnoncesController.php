@@ -6,8 +6,6 @@ use App\Entity\Annonce;
 use App\Entity\Image;
 use App\Form\AnnonceEditType;
 use App\Form\AnnonceType;
-use App\Form\ImageType;
-use Doctrine\ORM\EntityManager;
 use App\Repository\UserRepository;
 use App\Repository\ImageRepository;
 use App\Repository\AnnonceRepository;
@@ -15,9 +13,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
+
 
 class AnnoncesController extends AbstractController
 {
@@ -52,7 +49,7 @@ class AnnoncesController extends AbstractController
                 //Génére un nouveau nom de fichier pour l'image de couverture
                 $fichierImageCover = md5(uniqid()) . '.' . $annonceFile->guessExtension();
 
-                //Envoie du fichier dans public/images
+                //Envoie du fichier le folder
                 $annonceFile->move(
                     $this->getParameter('annonce_directory'),
                     $fichierImageCover
@@ -70,16 +67,14 @@ class AnnoncesController extends AbstractController
                 //Génére un nouveau nom de fichier pour les images
                 $fichierImages = md5(uniqid()) . '.' . $image->guessExtension();
 
-                //Envoie des images dans public/images
+                //Envoie des images dans le folder
                 $image->move(
                     $this->getParameter('annonce_directory'),
                     $fichierImages
                 );
 
-
                 //Création d'un nouvel objet Image
                 $img = new Image();
-
 
                 $img->setImage($fichierImages)
                     ->setAnnonce($annonce);
@@ -88,10 +83,8 @@ class AnnoncesController extends AbstractController
                 $entityManager->persist($img);
             }
 
-
             //Récupération de l'id user
             $user = $this->getUser();
-
 
             $annonce->setDate(new \DateTime())
                 ->setUser($user)
@@ -102,18 +95,15 @@ class AnnoncesController extends AbstractController
 
             $entityManager->flush();
 
-
-            $this->addFlash('success', 'Votre annonce a bien été créée !');
-
+            $this->addFlash('success', 'Félicitation, votre annonce a bien été créée !');
             return $this->redirectToRoute('app_annonces');
         }
 
-
         return $this->render('annonces/add.html.twig', [
             'formAnnonce' => $formAnnonce->createView(),
-
         ]);
     }
+
 
 
     #[Route('/annonce/{id}', name: 'show_annonce')]
@@ -131,10 +121,10 @@ class AnnoncesController extends AbstractController
         ]);
     }
 
+
     #[Route('/mes_annonces', name: 'annoncesByUser')]
     public function annoncesByUser(AnnonceRepository $repo)
     {
-
         $user = $this->getUser();
 
         //Récupére les annonces correspondant à l'utilisateur
@@ -143,7 +133,6 @@ class AnnoncesController extends AbstractController
         return $this->render('user/annonces.html.twig', [
             'annoncesByUsers' => $annoncesByUsers,
         ]);
-
     }
 
 
@@ -153,7 +142,7 @@ class AnnoncesController extends AbstractController
         //Récupére l'annonce concerné
         $annonce = $repo->find($id);
         
-        //Récupére les images correspondantes à l'ID de l'annonce
+        //Récupére les images correspondantes 
         $imagesByAnnonces = $repo2->findBy(['annonce' => $id]);
 
         //Formulaire relié à l'entité Annonce
@@ -169,21 +158,30 @@ class AnnoncesController extends AbstractController
 
             if($annonceFile) 
             {
+                //Récupére le chemin
+                $cheminImageCoverSupp = $this->getParameter('annonce_directory') . '/' . $annonce->getImageCover();
+
+                //Si il existe, on supprime du folder
+                if(file_exists($cheminImageCoverSupp))
+                {
+                   unlink($cheminImageCoverSupp);
+                }
+
                 //Génére un nouveau nom de fichier pour l'image de couverture
                 $fichierImageCover = md5(uniqid()) . '.' . $annonceFile->guessExtension();
  
-                //Envoie du fichier dans public/images
+                //Envoie du fichier dans le folder
                 $annonceFile->move(
                     $this->getParameter('annonce_directory'),
                     $fichierImageCover
                 );
  
                 $annonce->setImageCover($fichierImageCover);
-            }
-            else{}
+
+            }else{}
  
  
-            //Récupére le(s) image(s) transmise
+            //Récupére le(s) image(s) transmise(s)
             $images = $formEdit->get('images')->getData();
  
             //Boucle sur les images
@@ -192,13 +190,11 @@ class AnnoncesController extends AbstractController
                 //Génére un nouveau nom de fichier pour les images
                 $fichierImages = md5(uniqid()) . '.' . $image->guessExtension();
  
-                
-                //Envoie des images dans public/images
+                //Envoie des images dans le folder
                 $image->move(
                     $this->getParameter('annonce_directory'),
                     $fichierImages
                 );
-
 
                 //Création d'un nouvel objet Image
                 $img = new Image();
@@ -222,11 +218,9 @@ class AnnoncesController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Votre annonce a bien été modifié !');
-
             return $this->redirectToRoute('app_annonces');
-        }
-        else
-        {}
+
+        }else{}
 
         return $this->render('annonces/edit.html.twig',[
             'annonce' => $annonce,
@@ -237,24 +231,27 @@ class AnnoncesController extends AbstractController
     }
 
 
+
     #[Route('/annonces/image/{id}/supp', name: 'supp_image')]
     public function supprimerImage(ImageRepository $RepoImage, $id, EntityManagerInterface $entityManager)
     {
-
+        //Récupére l'image concerné
         $images = $RepoImage->find($id);
 
+        //Récupére le chemin
         $cheminImage = $this->getParameter('annonce_directory') . '/' . $images->getImage();
 
+        //Si il existe, on supprime du folder
         if(file_exists($cheminImage))
         {
             unlink($cheminImage);
         }
 
+        //Supprimer de la BDD
         $entityManager->remove($images);
         $entityManager->flush();
 
         $this->addFlash('danger', 'Votre image a bien été supprimé !');
-
         return $this->redirectToRoute('edit_annonce', [
             'id' => $images->getAnnonce()->getId()
         ]);
@@ -266,29 +263,35 @@ class AnnoncesController extends AbstractController
     #[Route('/annonces/{id}/supp', name: 'supp_annonce')]
     public function supprimerAnnonce(AnnonceRepository $repoAnnonce, ImageRepository $repoImage ,$id, EntityManagerInterface $entityManager)
     {
-
+        //Récupére l'annonce concerné
         $annonce = $repoAnnonce->find($id);
-
+        //Récupére les images lié a cet annonce
         $images = $repoImage->findBy(['annonce' => $id]);
 
+        //Récupére l'image de couverture de l'annonce
         $imageCover = $annonce->getImageCover();
+        //Récupére le chemin 
         $cheminCoverImage = $this->getParameter('annonce_directory') . '/' . $imageCover;
 
+        //Si il existe, on supprime du folder
         if(file_exists($cheminCoverImage))
         {
             unlink($cheminCoverImage);
         }
 
+        //Récupére tous les chemins des image(s) correspondantes
         foreach($images as $image)
         {
             $cheminImage = $this->getParameter('annonce_directory') . '/' . $image->getImage();
 
+            //Si existe, on supprime du folder
             if(file_exists($cheminImage))
             {
                 unlink($cheminImage);
             }
         }
   
+        //Supprimer l'annonce de la BDD
         $entityManager->remove($annonce);
         $entityManager->flush();
 

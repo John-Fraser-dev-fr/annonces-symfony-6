@@ -37,9 +37,11 @@ class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Votre inscription a bien été pris en compte !');
             return $this->redirectToRoute('connexion');
         }
 
+        
         return $this->render('user/inscription.html.twig', [
             'formUser'=> $formUser->createView()
         ]);
