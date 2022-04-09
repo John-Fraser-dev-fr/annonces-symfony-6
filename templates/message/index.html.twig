@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+
+    <h5>Mes messages</h5>
+
+    {% if messagesByUsers == null %}
+
+        <p>Vous n'avez aucun message.</p>
+    
+    {% else %}
+
+        {% for messagesByUsers in messagesByUsers %}
+
+            <p><b>Annonce n° {{messagesByUsers.annonce.id}}</b></p>
+            <p>{{messagesByUsers.contenu}}</p>
+
+        {% endfor %}   
+
+    {% endif %}
+
+{% endblock %}

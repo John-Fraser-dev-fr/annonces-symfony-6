@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+
+    {% if not app.user %}
+        <h5>Vous devez être connecté pour ajouter une annonce</h5>
+        <a class="btn btn-primary col-3" href="{{path('connexion')}}">Connexion</a>
+        <p>Pas encore de compte ? <a href="{{path('inscription')}}">Inscrivez-vous</a></p>
+    {% else %}
+        {{ form_start(formMessage) }}
+            <div class="row">
+                <div class="col-6">
+
+                    {{ form(formMessage) }}
+
+                </div>
+            </div>
+        {{ form_end(formMessage) }}
+    {% endif %}
+
+
+{% endblock %}
