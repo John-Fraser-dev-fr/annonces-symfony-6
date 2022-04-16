@@ -16,16 +16,16 @@ class Message
     #[ORM\Column(type: 'text')]
     private $contenu;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: 'datetime')]
     private $date;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'sent')]
     #[ORM\JoinColumn(nullable: false)]
-    private $user;
+    private $expediteur;
 
-    #[ORM\ManyToOne(targetEntity: Annonce::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'received')]
     #[ORM\JoinColumn(nullable: false)]
-    private $annonce;
+    private $destinataire;
 
     public function getId(): ?int
     {
@@ -56,26 +56,26 @@ class Message
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getExpediteur(): ?User
     {
-        return $this->user;
+        return $this->expediteur;
     }
 
-    public function setUser(?User $user): self
+    public function setExpediteur(?User $expediteur): self
     {
-        $this->user = $user;
+        $this->expediteur = $expediteur;
 
         return $this;
     }
 
-    public function getAnnonce(): ?Annonce
+    public function getDestinataire(): ?User
     {
-        return $this->annonce;
+        return $this->destinataire;
     }
 
-    public function setAnnonce(?Annonce $annonce): self
+    public function setDestinataire(?User $destinataire): self
     {
-        $this->annonce = $annonce;
+        $this->destinataire = $destinataire;
 
         return $this;
     }

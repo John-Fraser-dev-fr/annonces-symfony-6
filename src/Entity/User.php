@@ -41,9 +41,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Annonce::class, orphanRemoval: true)]
     private $annonce;
 
+    #[ORM\OneToMany(mappedBy: 'expediteur', targetEntity: Message::class, orphanRemoval: true)]
+    private $sent;
+
+    #[ORM\OneToMany(mappedBy: 'destinataire', targetEntity: Message::class, orphanRemoval: true)]
+    private $received;
+
     public function __construct()
     {
         $this->annonce = new ArrayCollection();
+        $this->sent = new ArrayCollection();
+        $this->received = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -162,6 +170,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($annonce->getUser() === $this) {
                 $annonce->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getSent(): Collection
+    {
+        return $this->sent;
+    }
+
+    public function addSent(Message $sent): self
+    {
+        if (!$this->sent->contains($sent)) {
+            $this->sent[] = $sent;
+            $sent->setExpediteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSent(Message $sent): self
+    {
+        if ($this->sent->removeElement($sent)) {
+            // set the owning side to null (unless already changed)
+            if ($sent->getExpediteur() === $this) {
+                $sent->setExpediteur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getReceived(): Collection
+    {
+        return $this->received;
+    }
+
+    public function addReceived(Message $received): self
+    {
+        if (!$this->received->contains($received)) {
+            $this->received[] = $received;
+            $received->setDestinataire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceived(Message $received): self
+    {
+        if ($this->received->removeElement($received)) {
+            // set the owning side to null (unless already changed)
+            if ($received->getDestinataire() === $this) {
+                $received->setDestinataire(null);
             }
         }
 

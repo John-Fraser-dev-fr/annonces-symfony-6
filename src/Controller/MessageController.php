@@ -4,8 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Message;
 use App\Form\MessageType;
-use App\Repository\AnnonceRepository;
-use App\Repository\MessageRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,31 +13,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MessageController extends AbstractController
 {
-    #[Route('/mes_messages', name: 'index_message')]
-    public function index(MessageRepository $repoMsg, AnnonceRepository $repoAnnonce): Response
+    #[Route('/message', name: 'app_message')]
+    public function index(): Response
     {
-        //Récupére l'id de l'utilisateur connecté
-        $user = $this->getUser();
-
-        //Récupére tous le(s) message(s) envoyé par cet utilisateur
-        $messagesByUsers = $repoMsg->findBy(['user' => $user]);
-
-
-        
         return $this->render('message/index.html.twig', [
             'controller_name' => 'MessageController',
-            'messagesByUsers' => $messagesByUsers,
         ]);
     }
 
-
-    #[Route('/add_message/{id}', name: 'add_message')]
-    public function add(AnnonceRepository $repoAnnonce, $id, Request $request, EntityManagerInterface $entityManager)
+    #[Route('/message/add/{id}', name: 'add_message')]
+    public function add(UserRepository $repoUser, $id, Request $request, EntityManagerInterface $entityManager): Response
     {
-        //Récupére l'annonce concerné par le message
-        $annonce = $repoAnnonce->find($id);
-        //Récupére l'id de l'utilisateur qui envoie le message
-        $user = $this->getUser();
+        //Récupére le destinataire
+        $dest = $repoUser->find($id);
+        //Récupére l'expéditeur
+        $exp = $this->getUser();
 
         //Création d'un nouvel objet Message
         $message = new Message();
@@ -50,8 +39,8 @@ class MessageController extends AbstractController
 
         if ($formMessage->isSubmitted() && $formMessage->isValid())
         {
-            $message->setUser($user)
-                    ->setAnnonce($annonce)
+            $message->setDestinataire($dest)
+                    ->setExpediteur($exp)
                     ->setDate(new \DateTime())
             ;
 
@@ -63,9 +52,22 @@ class MessageController extends AbstractController
             return $this->redirectToRoute('app_annonces');
         }
 
-        return $this->render('message/add.html.twig', [
-            'formMessage' => $formMessage->createView(),
+        return $this->render('message/add.html.twig', [  
+            "formMessage"=> $formMessage->createView() 
         ]);
-        
+    }
+
+    #[Route('/message/received', name: 'received_message')]
+    public function received(): Response
+    {
+        return $this->render('message/received.html.twig', [
+        ]);
+    }
+
+    #[Route('/message/sended', name: 'sended_message')]
+    public function sended(): Response
+    {
+        return $this->render('message/sended.html.twig', [
+        ]);
     }
 }

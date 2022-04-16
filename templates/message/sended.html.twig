@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+
+    <h5>Messages envoyés :</h5>
+
+    <p>Vous avez envoyé
+		{{app.user.sent | length}}
+		message(s).</p>
+
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th scope="col">Destinataire</th>
+				<th scope="col">Date</th>
+				<th scope="col">Contenu</th>
+			</tr>
+		</thead>
+		<tbody>
+        {% for message in app.user.sent %}
+            <tr>
+				<td>{{message.destinataire.prenom}} {{message.destinataire.nom}}</td>
+				<td>{{message.date | date('d/m/Y à H:i')}}</td>
+				<td>{{message.contenu}}</td>
+			</tr>
+        {% endfor %}
+			
+		</tbody>
+	</table>
+
+{% endblock %}
