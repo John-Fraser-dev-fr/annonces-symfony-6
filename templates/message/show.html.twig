@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+
+{% block body %}
+
+    <p>De : {{message.expediteur.prenom}} {{message.expediteur.nom}}</p>
+    <p>Le {{message.date | date('d/m/Y à H:i')}}</p>
+    <p>{{message.contenu}}</p>
+
+    <button class="btn btn-primary" type="button"><a href="{{path( 'add_message', {'id' : message.expediteur.id} )}}" style="text-decoration:none;color:white">Répondre</a></button>
+
+{% endblock %}

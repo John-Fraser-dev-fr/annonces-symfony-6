@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Message;
 use App\Form\MessageType;
+use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -69,5 +70,33 @@ class MessageController extends AbstractController
     {
         return $this->render('message/sended.html.twig', [
         ]);
+    }
+
+    #[Route('/message/show/{id}', name: 'show_message')]
+    public function showMessage($id, MessageRepository $repoMsg): Response
+    {
+
+        $message = $repoMsg->find($id);
+
+        return $this->render('message/show.html.twig', [
+            'message' => $message
+        ]);
+    }
+
+    #[Route('/message/delete/{id}', name: 'delete_message')]
+    public function deleteMessage($id, MessageRepository $repoMsg, EntityManagerInterface $entityManager): Response
+    {
+
+        $message = $repoMsg->find($id);
+
+        //Supprime le message de la BDD
+        $entityManager->remove($message);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Votre message a bien été supprimé !');
+
+        return $this->redirectToRoute('app_message');
+
+        return $this->render('message/show.html.twig');
     }
 }
