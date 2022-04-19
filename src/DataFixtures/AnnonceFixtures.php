@@ -22,7 +22,6 @@ class AnnonceFixtures extends Fixture
                  ->setPrenom($faker->firstName())
                  ->setEmail($faker->email())
                  ->setPassword($faker->password())
-                 ->setPhone('0612345678')
             ;
             $manager->persist($user);
 

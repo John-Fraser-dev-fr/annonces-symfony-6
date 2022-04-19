@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Message;
 use App\Form\MessageType;
+use App\Repository\AnnonceRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,12 +39,10 @@ class MessageController extends AbstractController
         //Analyse de la requete
         $formMessage->handleRequest($request);
 
-        if ($formMessage->isSubmitted() && $formMessage->isValid())
-        {
+        if ($formMessage->isSubmitted() && $formMessage->isValid()) {
             $message->setDestinataire($dest)
-                    ->setExpediteur($exp)
-                    ->setDate(new \DateTime())
-            ;
+                ->setExpediteur($exp)
+                ->setDate(new \DateTime());
 
             //Enregistrement en BDD
             $entityManager->persist($message);
@@ -53,23 +52,21 @@ class MessageController extends AbstractController
             return $this->redirectToRoute('app_annonces');
         }
 
-        return $this->render('message/add.html.twig', [  
-            "formMessage"=> $formMessage->createView() 
+        return $this->render('message/add.html.twig', [
+            "formMessage" => $formMessage->createView()
         ]);
     }
 
     #[Route('/message/received', name: 'received_message')]
     public function received(): Response
     {
-        return $this->render('message/received.html.twig', [
-        ]);
+        return $this->render('message/received.html.twig', []);
     }
 
     #[Route('/message/sended', name: 'sended_message')]
     public function sended(): Response
     {
-        return $this->render('message/sended.html.twig', [
-        ]);
+        return $this->render('message/sended.html.twig', []);
     }
 
     #[Route('/message/show/{id}', name: 'show_message')]

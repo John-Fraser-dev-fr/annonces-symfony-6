@@ -4,9 +4,9 @@
 
 {% block body %}
 
-    <h5>Messages envoyés :</h5>
+	<h5>Messages envoyés :</h5>
 
-    <p>Vous avez envoyé
+	<p>Vous avez envoyé
 		{{app.user.sent | length}}
 		message(s).</p>
 
@@ -19,16 +19,22 @@
 			</tr>
 		</thead>
 		<tbody>
-        {% for message in app.user.sent %}
-		
-            <tr>
-				<td>{{message.destinataire.prenom}} {{message.destinataire.nom}}</td>
-				<td>{{message.date | date('d/m/Y à H:i')}}</td>
-				<td>{{message.contenu}}</td>
-			</tr>
-	
-        {% endfor %}
-			
+			{% for message in app.user.sent|reverse %}
+
+				<tr>
+					<td>{{message.destinataire.prenom}}
+						{{message.destinataire.nom}}</td>
+					<td>{{message.date | date('d/m/Y à H:i')}}</td>
+					<td>{{message.contenu}}</td>
+					<td>
+						<a href="{{path( 'delete_message', {'id' : message.id} )}}">
+							<i class="bi bi-trash3"></i>
+						</a>
+					</td>
+				</tr>
+
+			{% endfor %}
+
 		</tbody>
 	</table>
 

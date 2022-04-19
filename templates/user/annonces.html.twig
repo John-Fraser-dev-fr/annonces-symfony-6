@@ -39,15 +39,16 @@
 					<td>{{annoncesByUser.titre}}</td>
 					<td><img src="/images/{{annoncesByUser.imageCover}}" class="img-fluid" style="width:90px;height:55px" alt="..."></td>
 					<td>
-						<div class="btn-group">
-							<button class="btn btn-primary"><a href="{{path( 'edit_annonce', {'id' : annoncesByUser.id} )}}" style="color:white; text-decoration: none">Modifier</a>
-                            <button class="btn btn-primary"><a href="{{path( 'supp_annonce', {'id' : annoncesByUser.id} )}}" style="color:white; text-decoration: none">Supprimer</a></button>
-						</div>
+						<a href="{{path( 'edit_annonce', {'id' : annoncesByUser.id} )}}">
+							<i class="bi bi-pencil"></i>
+						</a>
+						<a href="{{path( 'supp_annonce', {'id' : annoncesByUser.id} )}}">
+							<i class="bi bi-trash3"></i>
+						</a>
 					</td>
 				</tr>
 
-                
-				
+
 			{% endfor %}
 		</tbody>
 	</table>

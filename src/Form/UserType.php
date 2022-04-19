@@ -20,7 +20,6 @@ class UserType extends AbstractType
             ->add('nom', TextType::class)
             ->add('prenom', TextType::class)
             ->add('email', EmailType::class)
-            ->add('phone', IntegerType::class)
             ->add('password', PasswordType::class)
             ->add('Inscription', SubmitType::class)
             

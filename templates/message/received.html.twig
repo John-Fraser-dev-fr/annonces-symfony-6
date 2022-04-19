@@ -20,7 +20,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for message in app.user.received %}
+		{% for message in app.user.received|reverse %}
 			<tr>
 
 				<td>{{message.expediteur.prenom}}

@@ -11,12 +11,12 @@
 		<div class="col-6">
 			<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
 				<div class="carousel-inner">
-                    <div class="carousel-item active">
+					<div class="carousel-item active">
 						<img src="/images/{{annonce.imageCover}}" class="img-fluid" style="width:550px;height:350px" alt="...">
 					</div>
 					{% for image in images %}
 						<div class="carousel-item">
-							<img src="/images/{{image.image}}" class="img-fluid"  style="width:550px;height:350px" alt="...">
+							<img src="/images/{{image.image}}" class="img-fluid" style="width:550px;height:350px" alt="...">
 						</div>
 					{% endfor %}
 				</div>
@@ -51,7 +51,8 @@
 						</p>
 					</div>
 					<div>
-						<h5>{{annonce.prix | number_format(0, ' ', ' ')}} €</h5>
+						<h5>{{annonce.prix | number_format(0, ' ', ' ')}}
+							€</h5>
 					</div>
 				</div>
 			</div>
@@ -79,15 +80,14 @@
 						{% endif %}
 					</p>
 					<div class="d-grid gap-2 pt-3">
-						<button class="btn btn-light" type="button">Afficher son n° de téléphone
-						</button>
-					<button class="btn btn-light" type="button"><a href="{{path( 'add_message', {'id' : annonce.user.id} )}}">Envoyer un message</button>
+						<button class="btn btn-light" type="button">
+							<a href="{{path( 'add_message', {'id' : annonce.user.id} )}}">Envoyer un message</button>
+						</div>
 					</div>
 				</div>
+
 			</div>
 
+
 		</div>
-
-
-	</div>
-{% endblock %}
+	{% endblock %}
