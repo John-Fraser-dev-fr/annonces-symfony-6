@@ -65,11 +65,6 @@ class Annonce
     private $type;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\File(
-        maxSize: "2000k",
-        mimeTypes: "application/jpeg, application/jpg",
-        mimeTypesMessage : "Veuillez télécharger votre image aux formats JPG ou JPEG !",
-        maxSizeMessage: "Votre image ne doit pas dépasser 2 Mo !")]
     private $imageCover;
 
     public function __construct()

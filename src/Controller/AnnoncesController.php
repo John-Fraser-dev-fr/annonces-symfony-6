@@ -22,7 +22,7 @@ class AnnoncesController extends AbstractController
     public function index(AnnonceRepository $repo): Response
     {
         //Récupére toutes les annonces
-        $annonces = $repo->findby([],['id' => 'desc']);
+        $annonces = $repo->findby([],['date' => 'desc']);
 
         return $this->render('annonces/index.html.twig', [
             'annonces' => $annonces,
