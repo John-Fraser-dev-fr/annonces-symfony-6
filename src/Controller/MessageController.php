@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Message;
 use App\Form\MessageType;
-use App\Repository\AnnonceRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -73,28 +72,67 @@ class MessageController extends AbstractController
     #[Route('/message/show/{id}', name: 'show_message')]
     public function showMessage($id, MessageRepository $repoMsg): Response
     {
-
+        //récupére le message
         $message = $repoMsg->find($id);
+        //Récupére l'email de l'expéditeur
+        $exp = $message->getExpediteur();
+        //Récupére le destinataire
+        $dest = $message->getDestinataire();
 
+        //Si le message n'existe pas 
+        if(!$message)
+        {
+            $this->addFlash('danger', 'Ce message n\'existe pas !');
+            return $this->redirectToRoute('app_message');
+        }
+
+        //Si l'utilisateur est égale à l'expéditeur OU le destinataire 
+        if($this->getUser() == $exp and $this->getUser() == $dest)
+        {
+            return $this->render('message/show.html.twig', [
+                'message' => $message
+            ]);
+        }
+
+
+        
         return $this->render('message/show.html.twig', [
             'message' => $message
         ]);
+        
+       
     }
 
     #[Route('/message/delete/{id}', name: 'delete_message')]
     public function deleteMessage($id, MessageRepository $repoMsg, EntityManagerInterface $entityManager): Response
     {
-
+        //Récupére le messsage 
         $message = $repoMsg->find($id);
-
-        //Supprime le message de la BDD
-        $entityManager->remove($message);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Votre message a bien été supprimé !');
-
-        return $this->redirectToRoute('app_message');
-
-        return $this->render('message/show.html.twig');
+        //Récupére l'email de l'expéditeur
+        $exp = $message->getExpediteur();
+        //Récupére le destinataire
+        $dest = $message->getDestinataire();
+     
+        //Si l'utilisateur est égale à l'expéditeur OU le destinataire 
+        if($this->getUser() == $exp or $this->getUser() == $dest)
+        {
+            //Supprime le message de la BDD
+            $entityManager->remove($message);
+            $entityManager->flush();
+ 
+            $this->addFlash('success', 'Votre message a bien été supprimé !');
+            return $this->redirectToRoute('app_message');
+        }
+        else
+        {
+            $this->addFlash('danger', 'Vous n\'avez pas le droit de supprimer ce message ! ');
+            return $this->redirectToRoute('app_annonces');
+        }
+ 
+        return $this->render('message/index.html.twig',[
+            'message' => $message,
+        ]);
     }
 }
+
+

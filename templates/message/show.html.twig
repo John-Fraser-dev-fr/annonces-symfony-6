@@ -14,7 +14,8 @@
     <button class="btn btn-primary" type="button"><a href="{{path( 'add_message', {'id' : message.expediteur.id} )}}" style="text-decoration:none;color:white">Répondre</a></button>
 
     {% else %}
-        <h4>Vous faites une énorme erreur !<h4>
+        
+        <h5>Vous n'avez pas le droit de voir ce message !</h5>
 
     {% endif %}
 

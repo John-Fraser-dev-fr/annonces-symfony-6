@@ -4,6 +4,12 @@
 
 {% block body %}
 
+ {% if not app.user %}
+
+	<h5>Vous devez être connecté !</h5>
+
+	{% else %}
+
 <h5>Boite de réception :</h5>
 
 <p>Vous avez
@@ -39,6 +45,8 @@
 		{% endfor %}
 	</tbody>
 </table>
+
+{% endif %}
 
 
 
