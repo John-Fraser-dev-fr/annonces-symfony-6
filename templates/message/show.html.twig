@@ -5,7 +5,7 @@
 
 {% block body %}
 
-    {% if app.user == message.destinataire %}
+   
 
     <p>De : {{message.expediteur.prenom}} {{message.expediteur.nom}}</p>
     <p>Le {{message.date | date('d/m/Y à H:i')}}</p>
@@ -13,10 +13,6 @@
  
     <button class="btn btn-primary" type="button"><a href="{{path( 'add_message', {'id' : message.expediteur.id} )}}" style="text-decoration:none;color:white">Répondre</a></button>
 
-    {% else %}
-        
-        <h5>Vous n'avez pas le droit de voir ce message !</h5>
-
-    {% endif %}
+  
 
 {% endblock %}

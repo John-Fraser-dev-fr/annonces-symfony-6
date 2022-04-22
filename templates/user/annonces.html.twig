@@ -4,54 +4,59 @@
 
 {% block body %}
 
-	<h4>Mes annonces</h4>
+	<h4 class="mt-5 mb-5">Mes annonces</h4>
 
+	{% if annoncesByUsers|length == null %}
 
-	<table class="table table-hover">
-		<thead>
-			<tr>
-				<th scope="col">Type</th>
-				<th scope="col">Ville</th>
-				<th scope="col">Prix</th>
-				<th scope="col">Titre</th>
-				<th scope="col">Image</th>
-				<th scope="col"></th>
-			</tr>
-		</thead>
+		<h6 class="mt-5">Vous n'avez aucune annonce.</h6>
 
-		<tbody>
-			{% for annoncesByUser in annoncesByUsers %}
+	{% else %}
 
+		<table class="table table-hover mt-5">
+			<thead>
 				<tr>
-
-					<td>{{annoncesByUser.type}}
-						{{annoncesByUser.nbpieces}}
-						{% if annoncesByUser.nbpieces == 1 %}
-							pièce
-						{% else %}
-							pièces
-						{% endif %}
-						{{annoncesByUser.surface}}
-						m²</td>
-					<td>{{annoncesByUser.ville}}</td>
-					<td>{{annoncesByUser.prix | number_format(0, ' ', ' ')}}
-						€</td>
-					<td>{{annoncesByUser.titre}}</td>
-					<td><img src="/images/{{annoncesByUser.imageCover}}" class="img-fluid" style="width:90px;height:55px" alt="..."></td>
-					<td>
-						<a href="{{path( 'edit_annonce', {'id' : annoncesByUser.id} )}}">
-							<i class="bi bi-pencil"></i>
-						</a>
-						<a href="{{path( 'supp_annonce', {'id' : annoncesByUser.id} )}}">
-							<i class="bi bi-trash3"></i>
-						</a>
-					</td>
+					<th scope="col">Type</th>
+					<th scope="col">Ville</th>
+					<th scope="col">Prix</th>
+					<th scope="col">Titre</th>
+					<th scope="col">Image</th>
+					<th scope="col"></th>
 				</tr>
+			</thead>
+
+			<tbody>
+				{% for annoncesByUser in annoncesByUsers %}
+
+					<tr>
+
+						<td>{{annoncesByUser.type}}
+							{{annoncesByUser.nbpieces}}
+							{% if annoncesByUser.nbpieces == 1 %}
+								pièce
+							{% else %}
+								pièces
+							{% endif %}
+							{{annoncesByUser.surface}}
+							m²</td>
+						<td>{{annoncesByUser.ville}}</td>
+						<td>{{annoncesByUser.prix | number_format(0, ' ', ' ')}}
+							€</td>
+						<td>{{annoncesByUser.titre}}</td>
+						<td><img src="/images/{{annoncesByUser.imageCover}}" class="img-fluid" style="width:90px;height:55px" alt="..."></td>
+						<td>
+							<a href="{{path( 'edit_annonce', {'id' : annoncesByUser.id} )}}">
+								<i class="bi bi-pencil"></i>
+							</a>
+							<a href="{{path( 'supp_annonce', {'id' : annoncesByUser.id} )}}">
+								<i class="bi bi-trash3"></i>
+							</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 
 
-			{% endfor %}
-		</tbody>
-	</table>
-
+	{% endif %}
 
 {% endblock %}

@@ -3,11 +3,7 @@
 {% block title %}{% endblock %}
 
 {% block body %}
-    {% if not app.user %}
-
-	<h5>Vous devez être connecté !</h5>
-
-	{% else %}
+  
 
 	<h5>Messages envoyés :</h5>
 
@@ -43,6 +39,6 @@
 		</tbody>
 	</table>
     
-	{% endif %}
+	
 
 {% endblock %}

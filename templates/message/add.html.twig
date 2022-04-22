@@ -5,21 +5,13 @@
 
 {% block body %}
 
- {% if not app.user %}
-        <h5>Vous devez être connecté pour envoyer un message</h5>
-        <a class="btn btn-primary col-3" href="{{path('connexion')}}">Connexion</a>
-        <p>Pas encore de compte ? <a href="{{path('inscription')}}">Inscrivez-vous</a></p>
-    {% else %}
-        <p>Pour : {{dest.prenom}} {{dest.nom}}</p>
-        {{ form_start(formMessage) }}
-            <div class="row">
-                <div class="col-6">
-
-                    {{ form(formMessage) }}
-
-                </div>
+    <p>Pour : {{dest.prenom}} {{dest.nom}}</p>
+    {{ form_start(formMessage) }}
+        <div class="row">
+            <div class="col-6">
+                {{ form(formMessage) }}
             </div>
-        {{ form_end(formMessage) }}
-    {% endif %}
-
+        </div>
+    {{ form_end(formMessage) }}
+   
 {% endblock body %}

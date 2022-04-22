@@ -20,7 +20,6 @@ class UserController extends AbstractController
     {
         //Création d'un nouvel objet User
         $user = new User();
-
         //Création du formulaire relié à l'entité User
         $formUser = $this->createForm(UserType::class, $user);
 
@@ -41,7 +40,6 @@ class UserController extends AbstractController
             return $this->redirectToRoute('connexion');
         }
 
-        
         return $this->render('user/inscription.html.twig', [
             'formUser'=> $formUser->createView()
         ]);

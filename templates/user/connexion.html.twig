@@ -3,12 +3,11 @@
 {% block title %}{% endblock %}
 
 {% block body %}
-<h4>Connexion</h4>
 
- {% if error %}
+    <h4>Connexion</h4>
 
-    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
     <form action="{{ path('connexion')}}" method="POST">
@@ -23,4 +22,5 @@
             <button type="submit" class="btn btn-success">Connexion</button>
         </div>
     </form>
+    
 {% endblock %}

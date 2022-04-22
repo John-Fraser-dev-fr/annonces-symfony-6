@@ -33,75 +33,89 @@ class AnnoncesController extends AbstractController
     #[Route('/add', name: 'add_annonce')]
     public function add(Request $request, EntityManagerInterface $entityManager, UserRepository $user): Response
     {
-        //Création d'un nouvel objet Annonce
-        $annonce = new Annonce();
-        //Formulaire relié à l'entité Annonce
-        $formAnnonce = $this->createForm(AnnonceType::class, $annonce);
-
-        //Analyse de la requete
-        $formAnnonce->handleRequest($request);
-
-        if ($formAnnonce->isSubmitted() && $formAnnonce->isValid()) {
-            //Récupere l'image cover transmise
-            $annonceFile = $formAnnonce->get('imageCover')->getData();
-
-            if ($annonceFile) {
-                //Génére un nouveau nom de fichier pour l'image de couverture
-                $fichierImageCover = md5(uniqid()) . '.' . $annonceFile->guessExtension();
-
-                //Envoie du fichier le folder
-                $annonceFile->move(
-                    $this->getParameter('annonce_directory'),
-                    $fichierImageCover
-                );
-
-                $annonce->setImageCover($fichierImageCover);
-            }
-
-
-            //Récupére le(s) image(s)
-            $images = $formAnnonce->get('images')->getData();
-
-            //Boucle sur les images
-            foreach ($images as $image) {
-                //Génére un nouveau nom de fichier pour les images
-                $fichierImages = md5(uniqid()) . '.' . $image->guessExtension();
-
-                //Envoie des images dans le folder
-                $image->move(
-                    $this->getParameter('annonce_directory'),
-                    $fichierImages
-                );
-
-                //Création d'un nouvel objet Image
-                $img = new Image();
-
-                $img->setImage($fichierImages)
-                    ->setAnnonce($annonce);
-
-                //Enregistrement en  BDD
-                $entityManager->persist($img);
-            }
-
-            //Récupération de l'id user
-            $user = $this->getUser();
-
-            $annonce->setDate(new \DateTime())
-                ->setUser($user)
-                ->addImage($img);
-
-            //Enregistrement en BDD
-            $entityManager->persist($annonce);
-
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Félicitation, votre annonce a bien été créée !');
+        //Si l'utilisateur n'est pas connecté
+        if (!$this->getUser())
+        {
+            $this->addFlash('danger', 'Vous devez être connecté pour ajouter une annonce !');
             return $this->redirectToRoute('app_annonces');
-        }
+        } 
+        else 
+        {
+            //Création d'un nouvel objet Annonce
+            $annonce = new Annonce();
+            //Formulaire relié à l'entité Annonce
+            $formAnnonce = $this->createForm(AnnonceType::class, $annonce);
 
-        return $this->render('annonces/add.html.twig', [
-            'formAnnonce' => $formAnnonce->createView(),
-        ]);
+            //Analyse de la requete
+            $formAnnonce->handleRequest($request);
+            if ($formAnnonce->isSubmitted() && $formAnnonce->isValid())
+            {
+                //Récupere l'image cover transmise
+                $annonceFile = $formAnnonce->get('imageCover')->getData();
+
+                //Si il y a un fichier
+                if($annonceFile)
+                {
+                    //Génére un nouveau nom de fichier pour l'image de couverture
+                    $fichierImageCover = md5(uniqid()) . '.' . $annonceFile->guessExtension();
+
+                    //Envoie du fichier le folder
+                    $annonceFile->move(
+                        $this->getParameter('annonce_directory'),
+                        $fichierImageCover
+                    );
+
+                    //Envoie le nom du fichier en BDD
+                    $annonce->setImageCover($fichierImageCover);
+                }
+
+
+                //Récupére le(s) image(s)
+                $images = $formAnnonce->get('images')->getData();
+
+                //Boucle sur le(s) image(s)
+                foreach ($images as $image)
+                {
+                    //Génére un nouveau nom de fichier pour chaque image
+                    $fichierImages = md5(uniqid()) . '.' . $image->guessExtension();
+
+                    //Envoie des images dans le folder
+                    $image->move(
+                        $this->getParameter('annonce_directory'),
+                        $fichierImages
+                    );
+
+                    //Création d'un nouvel objet Image
+                    $img = new Image();
+
+                    //Modification en BDD
+                    $img->setImage($fichierImages)
+                        ->setAnnonce($annonce);
+
+                    //Enregistrement en  BDD
+                    $entityManager->persist($img);
+                }
+
+                //Récupération de l'id user
+                $user = $this->getUser();
+
+                //Modification en BDD
+                $annonce->setDate(new \DateTime())
+                    ->setUser($user)
+                    ->addImage($img);
+
+                //Enregistrement en BDD
+                $entityManager->persist($annonce);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Félicitation, votre annonce a bien été créée !');
+                return $this->redirectToRoute('app_annonces');
+            }
+
+            return $this->render('annonces/add.html.twig', [
+                'formAnnonce' => $formAnnonce->createView(),
+            ]);
+        }
     }
 
 
@@ -114,10 +128,13 @@ class AnnoncesController extends AbstractController
         //Récupére les images correspondantes à l'ID de l'annonce
         $images = $repo2->findBy(['annonce' => $id]);
 
-        if(!$annonce) {
+        //Si l'annonce n'existe pas
+        if (!$annonce)
+        {
             $this->addFlash('danger', 'Cet annonce n\'existe pas !');
             return $this->redirectToRoute('app_annonces');
-        }else
+        }
+        else
         {
             return $this->render('annonces/show.html.twig', [
                 'annonce' => $annonce,
@@ -127,16 +144,20 @@ class AnnoncesController extends AbstractController
     }
 
 
+
     #[Route('/mes_annonces', name: 'annoncesByUser')]
     public function annoncesByUser(AnnonceRepository $repo)
     {
+        //Récupére l'utilisateur
         $user = $this->getUser();
 
-        if (!$user) {
-            $this->addFlash('danger', 'Vous devez être connecté !');
+        //Si aucun utilisateur
+        if (!$user)
+        {
+            $this->addFlash('danger', 'Vous devez être connecté pour accéder à ce service !');
             return $this->redirectToRoute('app_annonces');
         }
-        else 
+        else
         {
             //Récupére les annonces correspondant à l'utilisateur
             $annoncesByUsers = $repo->findBy(['user' => $user], ['id' => 'desc']);
@@ -153,106 +174,111 @@ class AnnoncesController extends AbstractController
     {
         //Récupére l'annonce concerné
         $annonce = $repo->find($id);
-        //récupére l'email du  propriètaire de l'annonce
+        //récupére le propriètaire de l'annonce
         $user = $annonce->getUser();
-        //récupére l'email de l'utilisateur
+        //récupére l'utilisateur connecté
         $userCo = $this->getUser();
 
-        if(!$userCo)
+        //Si aucun utilisateur connecté
+        if (!$userCo)
         {
             $this->addFlash('danger', 'Vous n\'avez pas le droit de modifier cet annonce !');
             return $this->redirectToRoute('app_annonces');
         }
-
-        if($user != $userCo)
+        //Si le propiétaire de l'annonce est différent de l'utilisateur connecté
+        if ($user != $userCo)
         {
             $this->addFlash('danger', 'Vous n\'avez pas le droit de modifier cet annonce !');
             return $this->redirectToRoute('app_annonces');
         }
         else
         {
+            //Récupére les images correspondantes 
+            $imagesByAnnonces = $repo2->findBy(['annonce' => $id]);
+            //Formulaire relié à l'entité Annonce
+            $formEdit = $this->createForm(AnnonceEditType::class, $annonce);
 
-        //Récupére les images correspondantes 
-        $imagesByAnnonces = $repo2->findBy(['annonce' => $id]);
+            //Analyse de la requete
+            $formEdit->handleRequest($request);
 
-        //Formulaire relié à l'entité Annonce
-        $formEdit = $this->createForm(AnnonceEditType::class, $annonce);
+            if ($formEdit->isSubmitted() && $formEdit->isValid())
+            {
+                //Récupere l'image cover transmise
+                $annonceFile = $formEdit->get('imageCover')->getData();
 
-        //Analyse de la requete
-        $formEdit->handleRequest($request);
+                if ($annonceFile)
+                {
+                    //Récupére le chemin
+                    $cheminImageCoverSupp = $this->getParameter('annonce_directory') . '/' . $annonce->getImageCover();
 
-        if ($formEdit->isSubmitted() && $formEdit->isValid()) {
-            //Récupere l'image cover transmise
-            $annonceFile = $formEdit->get('imageCover')->getData();
+                    //Si il existe, on supprime du folder
+                    if (file_exists($cheminImageCoverSupp)) {
+                        unlink($cheminImageCoverSupp);
+                    }
 
-            if ($annonceFile) {
-                //Récupére le chemin
-                $cheminImageCoverSupp = $this->getParameter('annonce_directory') . '/' . $annonce->getImageCover();
+                    //Génére un nouveau nom de fichier pour l'image de couverture
+                    $fichierImageCover = md5(uniqid()) . '.' . $annonceFile->guessExtension();
 
-                //Si il existe, on supprime du folder
-                if (file_exists($cheminImageCoverSupp)) {
-                    unlink($cheminImageCoverSupp);
+                    //Envoie du fichier dans le folder
+                    $annonceFile->move(
+                        $this->getParameter('annonce_directory'),
+                        $fichierImageCover
+                    );
+
+                    //Modification en BDD
+                    $annonce->setImageCover($fichierImageCover);
+                } 
+                
+                //Récupére le(s) image(s) transmise(s)
+                $images = $formEdit->get('images')->getData();
+
+                //Boucle sur les images
+                foreach ($images as $image) 
+                {
+                    //Génére un nouveau nom de fichier pour les images
+                    $fichierImages = md5(uniqid()) . '.' . $image->guessExtension();
+
+                    //Envoie des images dans le folder
+                    $image->move(
+                        $this->getParameter('annonce_directory'),
+                        $fichierImages
+                    );
+
+                    //Création d'un nouvel objet Image
+                    $img = new Image();
+
+                    //Modification en BDD
+                    $img->setImage($fichierImages)
+                        ->setAnnonce($annonce)
+                    ;
+
+                    //Enregistrement en  BDD
+                    $entityManager->persist($img);
                 }
 
-                //Génére un nouveau nom de fichier pour l'image de couverture
-                $fichierImageCover = md5(uniqid()) . '.' . $annonceFile->guessExtension();
+                //Récupération de l'utilisateur
+                $user = $this->getUser();
 
-                //Envoie du fichier dans le folder
-                $annonceFile->move(
-                    $this->getParameter('annonce_directory'),
-                    $fichierImageCover
-                );
+                //Modification en BDD
+                $annonce->setDate(new \DateTime())
+                        ->setUser($user);
+                $entityManager->persist($annonce);
+                $entityManager->flush();
 
-                $annonce->setImageCover($fichierImageCover);
-            } else {
+                $this->addFlash('success', 'Votre annonce a bien été modifié !');
+                return $this->redirectToRoute('app_annonces');
+            }
+            else
+            {
+                
             }
 
-
-            //Récupére le(s) image(s) transmise(s)
-            $images = $formEdit->get('images')->getData();
-
-            //Boucle sur les images
-            foreach ($images as $image) {
-                //Génére un nouveau nom de fichier pour les images
-                $fichierImages = md5(uniqid()) . '.' . $image->guessExtension();
-
-                //Envoie des images dans le folder
-                $image->move(
-                    $this->getParameter('annonce_directory'),
-                    $fichierImages
-                );
-
-                //Création d'un nouvel objet Image
-                $img = new Image();
-
-                $img->setImage($fichierImages)
-                    ->setAnnonce($annonce);
-
-                //Enregistrement en  BDD
-                $entityManager->persist($img);
-            }
-
-            //Récupération de l'id user
-            $user = $this->getUser();
-
-            $annonce->setDate(new \DateTime())
-                ->setUser($user);
-
-            $entityManager->persist($annonce);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Votre annonce a bien été modifié !');
-            return $this->redirectToRoute('app_annonces');
-        } else {
+            return $this->render('annonces/edit.html.twig', [
+                'annonce' => $annonce,
+                'imagesByAnnonces' => $imagesByAnnonces,
+                'formEdit' => $formEdit->createView()
+            ]);
         }
-
-        }
-
-        return $this->render('annonces/edit.html.twig', [
-            'annonce' => $annonce,
-            'imagesByAnnonces' => $imagesByAnnonces,
-            'formEdit' => $formEdit->createView()
-        ]);
     }
 
 
@@ -267,32 +293,31 @@ class AnnoncesController extends AbstractController
         //récupére l'utilisateur
         $user = $this->getUser();
 
-        if($userImage != $user)
+        //Si le propriétaire de l'image est différent de l'utilsateur
+        if ($userImage != $user)
         {
             $this->addFlash('danger', 'Vous n\'avez pas le droit de supprimer cet image !');
             return $this->redirectToRoute('app_annonces');
         }
         else
         {
+            //Récupére le chemin
+            $cheminImage = $this->getParameter('annonce_directory') . '/' . $images->getImage();
 
-        //Récupére le chemin
-        $cheminImage = $this->getParameter('annonce_directory') . '/' . $images->getImage();
+            //Si il existe, on supprime du folder
+            if (file_exists($cheminImage)) {
+                unlink($cheminImage);
+            }
 
-        //Si il existe, on supprime du folder
-        if (file_exists($cheminImage)) {
-            unlink($cheminImage);
+            //Supprimer de la BDD
+            $entityManager->remove($images);
+            $entityManager->flush();
+
+            $this->addFlash('danger', 'Votre image a bien été supprimé !');
+            return $this->redirectToRoute('edit_annonce', [
+                'id' => $images->getAnnonce()->getId()
+            ]);
         }
-
-        //Supprimer de la BDD
-        $entityManager->remove($images);
-        $entityManager->flush();
-
-        $this->addFlash('danger', 'Votre image a bien été supprimé !');
-        return $this->redirectToRoute('edit_annonce', [
-            'id' => $images->getAnnonce()->getId()
-        ]);
-
-    }
     }
 
 
@@ -309,45 +334,44 @@ class AnnoncesController extends AbstractController
         //Récupére l'utilisateur
         $user = $this->getUser();
 
-
-        if($userAnnonce != $user)
+        //Si le propiétaire de l'annonce est différent de l'utilisateur
+        if ($userAnnonce != $user) 
         {
-            $this->addFlash('danger', 'Vous n\'avez pas le droit de supprimer cet image !');
+            $this->addFlash('danger', 'Vous n\'avez pas le droit de supprimer cet annonce !');
             return $this->redirectToRoute('app_annonces');
         }
         else
         {
+            //Récupére l'image de couverture de l'annonce
+            $imageCover = $annonce->getImageCover();
+            //Récupére le chemin 
+            $cheminCoverImage = $this->getParameter('annonce_directory') . '/' . $imageCover;
 
-        //Récupére l'image de couverture de l'annonce
-        $imageCover = $annonce->getImageCover();
-        //Récupére le chemin 
-        $cheminCoverImage = $this->getParameter('annonce_directory') . '/' . $imageCover;
-
-        //Si il existe, on supprime du folder
-        if (file_exists($cheminCoverImage)) {
-            unlink($cheminCoverImage);
-        }
-
-        //Récupére tous les chemins des image(s) correspondantes
-        foreach ($images as $image) {
-            $cheminImage = $this->getParameter('annonce_directory') . '/' . $image->getImage();
-
-            //Si existe, on supprime du folder
-            if (file_exists($cheminImage)) {
-                unlink($cheminImage);
+            //Si il existe, on supprime du folder
+            if (file_exists($cheminCoverImage))
+            {
+                unlink($cheminCoverImage);
             }
+
+            //Récupére tous les chemins des image(s) correspondantes
+            foreach ($images as $image)
+            {
+                $cheminImage = $this->getParameter('annonce_directory') . '/' . $image->getImage();
+
+                //Si existe, on supprime du folder
+                if (file_exists($cheminImage))
+                {
+                    unlink($cheminImage);
+                }
+            }
+
+            //Supprimer l'annonce de la BDD
+            $entityManager->remove($annonce);
+            $entityManager->flush();
+
+            $this->addFlash('danger', 'Votre annonce a bien été supprimé !');
+            return $this->redirectToRoute('annoncesByUser');
         }
-
-        //Supprimer l'annonce de la BDD
-        $entityManager->remove($annonce);
-        $entityManager->flush();
-
-        $this->addFlash('danger', 'Votre annonce a bien été supprimé !');
-
-        return $this->redirectToRoute('annoncesByUser');
-
-    }
     }
 }
-
 

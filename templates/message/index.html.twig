@@ -4,21 +4,13 @@
 
 {% block body %}
 
-    {% if not app.user %}
-
-	<h5>Vous devez être connecté !</h5>
-
-	{% else %}
-	<h4>Mes messages :</h4>
-
 	
+	<h4 class="mt-5 mb-5">Mes messages</h4>
 
-	<div class="list-group">
-		<a href="{{ path('received_message')}}" class="list-group-item list-group-item-action">Boite de réception ({{ app.user.received | length }})</a>
-		<a href="{{ path('sended_message')}}" class="list-group-item list-group-item-action">Messages envoyés ({{ app.user.sent | length }})</a>
+	<div class="list-group" class="mt-5">
+		<a href="{{ path('received_message')}}" class="list-group-item list-group-item-action">Boite de réception ({{ app.user.received|length }})</a>
+		<a href="{{ path('sended_message')}}" class="list-group-item list-group-item-action">Messages envoyés ({{ app.user.sent|length }})</a>
 	</div>
-
-	{% endif %}
 
 
 {% endblock %}

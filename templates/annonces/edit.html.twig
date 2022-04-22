@@ -4,163 +4,136 @@
 
 {% block body %}
 
-<h4>Modifier votre annonce n°{{annonce.id}}</h4>
+	<h4>Modifier votre annonce n°{{annonce.id}}</h4>
 
-{{ form_start(formEdit) }}
+	{{ form_start(formEdit) }}
 
+        <div class="row">
+		    <div class="col-6">
+			    <div>
+				    {{ form_label(formEdit, 'Titre') }}
+				    {{ form_widget(formEdit.titre, { 'attr': {
+                    'value': annonce.titre, } }) 
+                    }}
+			    </div>
+			    <div>
+				    {{ form_label(formEdit, 'description') }}
+				    {{ form_widget(formEdit.description, { 'attr': {
+                    'value': annonce.description } }) 
+                    }}
+			    </div>
+			    <div>
+				    {{ form_label(formEdit, 'Nombre de pièces') }}
+				    {{ form_widget(formEdit.nb_pieces, { 'attr': {
+                    'value': annonce.nbpieces } }) 
+                    }}
+			    </div>
+			    <div>
+				    {{ form_label(formEdit, 'Surface') }}
+				    {{ form_widget(formEdit.surface, { 'attr': {
+                    'value': annonce.surface } }) 
+                    }}
+			    </div>
+			    <div>
+				    {{ form_label(formEdit, 'Prix') }}
+				    {{ form_widget(formEdit.prix, { 'attr': {
+                    'value': annonce.prix } }) 
+                    }}
+			    </div>
+			    <div>
+				    {{ form_label(formEdit, 'Code postal') }}
+				    {{ form_widget(formEdit.cd_postal, { 'attr': {
+                    'value': annonce.cdpostal } }) 
+                    }}
+			    </div>
+			    <div>
+				    {{ form_label(formEdit, 'Ville') }}
+				    {{ form_widget(formEdit.ville, { 'attr': {
+                    'value': annonce.ville } }) 
+                    }}
+			    </div>
+			    <div>
+				    {{ form_label(formEdit, 'Type de bien') }}
+				    {{ form_widget(formEdit.type, { 'attr': {
+                    'value': annonce.type} }) 
+                    }}
+			    </div>
 
-<div class="row">
-	<div class="col-6">
-		<div>
-			{{ form_label(formEdit, 'Titre') }}
-			{{ form_widget(formEdit.titre, { 'attr': {
-                'value': annonce.titre, } }) 
-            }}
-		</div>
+			    <div class="mt-5">
+				    <div>
+					    <img src="/images/{{annonce.imageCover}}" class="img-fluid" style="width:220px;height:140px" alt="...">
+				    </div>
+				    <div class="d-flex" style="justify-content: space-between">
+					    <div>
+						    {{ form_label(formEdit, 'Modifier l\'image de couverture') }}
+                        </div>
+                        <div>
+                            <i class="bi bi-plus-circle-fill" id="show_hide_cover" style="color:green"></i>
+                        </div>
+                    </div>
+                    <div id="champ_imageCover" style="display: none">
+			            {{ form_widget(formEdit.imageCover)}}
+                    </div>
+		        </div>
 
-		<div>
-			{{ form_label(formEdit, 'description') }}
-			{{ form_widget(formEdit.description, { 'attr': {
-                'value': annonce.description } }) 
-            }}
-		</div>
+		        <div class="mt-5">
+                    <div class="mb-3">
+                        <div>
+                            {% for imagesByAnnonce in imagesByAnnonces %}	
+                                <img src="/images/{{imagesByAnnonce.image}}" class="img-fluid"  style="width:220px;height:140px" alt="...">	
+                                <a href="{{path( 'supp_image', {'id' : imagesByAnnonce.id} )}}"><i class="bi bi-trash-fill" style="color:red" ></i></a>	 
+			                {% endfor %}
+                        </div>
+                    </div>
+                    <div class="d-flex" style="justify-content: space-between">
+                        <div>
+                            {{ form_label(formEdit.images, 'Ajouter d\'autres images') }}
+					    </div>
+					    <div>
+						    <i class="bi bi-plus-circle-fill" id="show_hide" style="color:green"></i>
+					    </div>
+				    </div>
+				    <div id="champ_images" style="display: none">
+					    {{ form_widget(formEdit.images)}}
+				    </div>
+			    </div>
 
-		<div>
-			{{ form_label(formEdit, 'Nombre de pièces') }}
-			{{ form_widget(formEdit.nb_pieces, { 'attr': {
-                'value': annonce.nbpieces } }) 
-            }}
-		</div>
+		    </div>
+	    </div>
+	{{ form_end(formEdit) }}
 
-		<div>
-			{{ form_label(formEdit, 'Surface') }}
-			{{ form_widget(formEdit.surface, { 'attr': {
-                'value': annonce.surface } }) 
-            }}
-		</div>
+    <!-- Script pour afficher/masquer champ upload -->
+	<script type="text/javascript">
 
-		<div>
-			{{ form_label(formEdit, 'Prix') }}
-			{{ form_widget(formEdit.prix, { 'attr': {
-                'value': annonce.prix } }) 
-            }}
-		</div>
+        //Bouton show/hide image(s)
+		let show_hide = document.getElementById("show_hide");
+        //Champ upload image(s)
+        let champ_images = document.getElementById("champ_images");
 
-		<div>
-			{{ form_label(formEdit, 'Code postal') }}
-			{{ form_widget(formEdit.cd_postal, { 'attr': {
-                'value': annonce.cdpostal } }) 
-            }}
-		</div>
+        //SI on click et SI le champ upload images n'est pas en display:none, on passe en display:block
+        show_hide.addEventListener("click", () => {
+            if (getComputedStyle(champ_images).display != "none") {
+                champ_images.style.display = "none";
+            } else {
+               champ_images.style.display = "block";
+            }
+        })
 
-		<div>
-			{{ form_label(formEdit, 'Ville') }}
-			{{ form_widget(formEdit.ville, { 'attr': {
-                'value': annonce.ville } }) 
-            }}
-		</div>
+        //Bouton show/hide image de couverture
+        let show_hide_cover = document.getElementById("show_hide_cover");
+        //Champ upload image de couverture
+        let champ_imageCover = document.getElementById("champ_imageCover");
 
-		<div>
-			{{ form_label(formEdit, 'Type de bien') }}
-			{{ form_widget(formEdit.type, { 'attr': {
-                'value': annonce.type} }) 
-            }}
-		</div>
-
-		<div class="mt-5">
-			
-			<div>
-				<img src="/images/{{annonce.imageCover}}" class="img-fluid" style="width:220px;height:140px" alt="...">
-			</div>
-
-            <div class="d-flex" style="justify-content: space-between">
-                <div>
-                    {{ form_label(formEdit, 'Modifier l\'image de couverture') }}
-                </div>
-                <div>
-                    <i class="bi bi-plus-circle-fill" id="show_hide_cover" style="color:green"></i>
-                </div>
-            </div>
-
-            <div id="champ_imageCover" style="display: none">
-			    {{ form_widget(formEdit.imageCover)}}
-            </div>
-
-		</div>
-
-		<div class="mt-5">
-            <div class="mb-3">
-                <div>
-                    {% for imagesByAnnonce in imagesByAnnonces %}	
-                       
-                           <img src="/images/{{imagesByAnnonce.image}}" class="img-fluid"  style="width:220px;height:140px" alt="...">	
-                      
-                            <a href="{{path( 'supp_image', {'id' : imagesByAnnonce.id} )}}"><i class="bi bi-trash-fill" style="color:red" ></i></a>
-                       	 
-			        {% endfor %}
-                </div>
-                
-            </div>
-
-            <div class="d-flex" style="justify-content: space-between">
-                <div>
-                    {{ form_label(formEdit.images, 'Ajouter d\'autres images') }}
-                </div>
-                <div>
-                    <i class="bi bi-plus-circle-fill" id="show_hide" style="color:green"></i>
-                </div>
-            </div>
-
-            <div id="champ_images" style="display: none">
-
-
-             {{ form_widget(formEdit.images)}}
-            
-            
-            </div>
-         
-           
-        </div>
-
-            
-    </div>
-</div>
-    {{ form_end(formEdit) }}
-
-
-
-
-
-<script type="text/javascript">
-
-let show_hide = document.getElementById("show_hide");
-
-let champ_images = document.getElementById("champ_images");
-
-show_hide.addEventListener("click", () =>{
-    if(getComputedStyle(champ_images).display != "none"){
-        champ_images.style.display = "none";
-    }else{
-        champ_images.style.display = "block";
-    }
-})
-
-
-let show_hide_cover = document.getElementById("show_hide_cover");
-
-let champ_imageCover = document.getElementById("champ_imageCover");
-
-show_hide_cover.addEventListener("click", () =>{
-    if(getComputedStyle(champ_imageCover).display != "none"){
-        champ_imageCover.style.display = "none";
-    }else{
-        champ_imageCover.style.display = "block";
-    }
-})
-
-
-</script>
-
+        //SI on click et SI le champ upload image cover n'est pas en display:none, on passe en display:block
+        show_hide_cover.addEventListener("click", () => {
+            if (getComputedStyle(champ_imageCover).display != "none") {
+                champ_imageCover.style.display = "none";
+            } else {
+                champ_imageCover.style.display = "block";
+            }
+        })
+        
+	</script>
 
 
 {% endblock body %}
